@@ -1,7 +1,7 @@
 node_modules
 
 # Log files
-npm-debug.log*
+*.log
 
 # Editor directories and files
 .vscode
