@@ -1,4 +1,10 @@
+# Dev
 node_modules
+dist
+.env
+
+# Private
+src/config/serviceAccountKey.json
 
 # Log files
 *.log

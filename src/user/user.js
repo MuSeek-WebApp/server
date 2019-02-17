@@ -1,7 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var admin = require('firebase-admin');
-var logger = require('../logger');
+import express from 'express'
+import admin from 'firebase-admin'
+import logger from '../scripts/logger'
+
+const router = express.Router();
 
 router.post('/login', function (req, res, next) {
   admin.auth().verifyIdToken(req.body.tokenId)
