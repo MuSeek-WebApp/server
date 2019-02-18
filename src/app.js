@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 
 import routes from "./app.route";
 import winston from "./scripts/logger";
-import serviceAccount from "./config/serviceAccountKey.json";
+import serviceAccount from "../config/serviceAccountKey.json";
 
 const app = express();
 app.use(bodyParser.json());
