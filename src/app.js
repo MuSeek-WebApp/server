@@ -1,11 +1,20 @@
+import morgan from "morgan";
 import express from "express";
 import admin from "firebase-admin";
 import bodyParser from "body-parser";
+
 import routes from "./app.route";
-import serviceAccount from "../config/serviceAccountKey.json";
+import winston from "./scripts/logger";
+import serviceAccount from "./config/serviceAccountKey.json";
 
 const app = express();
 app.use(bodyParser.json());
+
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev", { stream: winston.stream }));
+} else {
+  app.use(morgan("combined", { stream: winston.stream }));
+}
 
 // mount all routes on /api path
 app.use("/api", routes);
