@@ -1,12 +1,13 @@
 import express from "express";
-import usersRouter from "./user/user";
 import admin from "firebase-admin";
+
+import routes from "./app.route";
 import serviceAccount from "./config/serviceAccountKey.json";
 
 const app = express();
 
-app.use(express.json());
-app.use("/users", usersRouter);
+// mount all routes on /api path
+app.use("/api", routes);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
