@@ -4,12 +4,12 @@ import createError from "http-errors";
 import logger from "../scripts/logger";
 
 export function auth(req, res, next) {
-  const { tokenId } = req.cookies;
+  const { idToken } = req.cookies;
   admin
     .auth()
-    .verifyIdToken(tokenId)
+    .verifyIdToken(idToken)
     .then(() => {
-      logger.info("tokenId:" + tokenId + " verified");
+      logger.info("idToken:" + idToken + " idToken");
       next();
     })
     .catch(error => {
@@ -27,11 +27,11 @@ export function auth(req, res, next) {
 export function login(req, res, next) {
   admin
     .auth()
-    .verifyIdToken(req.body.tokenId)
+    .verifyIdToken(req.body.idToken)
     .then(decodedToken => {
       const uid = decodedToken.uid;
       logger.info("user logged in (" + uid + ")");
-      res.cookie("tokenId", req.body.tokenId);
+      res.cookie("idToken", req.body.idToken);
       res.sendStatus(200);
     })
     .catch(error => {
