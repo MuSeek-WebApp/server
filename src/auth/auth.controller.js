@@ -1,7 +1,7 @@
-import admin from "firebase-admin";
-import createError from "http-errors";
+import admin from 'firebase-admin';
+import * as createError from 'http-errors';
 
-import logger from "../scripts/logger";
+import logger from '../scripts/logger';
 
 export function auth(req, res, next) {
   const { idToken } = req.cookies;
@@ -9,12 +9,12 @@ export function auth(req, res, next) {
     .auth()
     .verifyIdToken(idToken)
     .then(() => {
-      logger.info("idToken:" + idToken + " idToken");
+      logger.info(`idToken:${idToken} idToken`);
       next();
     })
-    .catch(error => {
+    .catch((error) => {
       logger.error(error);
-      next(createError(403, "Forbidden"));
+      next(createError(403, 'Forbidden'));
     });
 }
 
@@ -22,19 +22,19 @@ export function auth(req, res, next) {
  *
  * @param req
  * @param res
- * @param next
  */
-export function login(req, res, next) {
+export function login(req, res) {
+  const { idToken } = req.body;
   admin
     .auth()
-    .verifyIdToken(req.body.idToken)
-    .then(decodedToken => {
-      const uid = decodedToken.uid;
-      logger.info("user logged in (" + uid + ")");
-      res.cookie("idToken", req.body.idToken);
+    .verifyIdToken(idToken)
+    .then((decodedToken) => {
+      const { uid } = decodedToken;
+      logger.info(`user logged in (${uid})`);
+      res.cookie('idToken', idToken);
       res.sendStatus(200);
     })
-    .catch(error => {
+    .catch((error) => {
       logger.error(error);
       res.sendStatus(403);
     });
