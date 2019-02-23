@@ -1,9 +1,9 @@
 import admin from 'firebase-admin';
 import * as createError from 'http-errors';
 
-import logger from '../scripts/logger';
+import logger from '../utils/logger';
 
-export function auth(req, res, next) {
+exports.auth = (req, res, next) => {
   const { idToken } = req.cookies;
   admin
     .auth()
@@ -16,14 +16,9 @@ export function auth(req, res, next) {
       logger.error(error);
       next(createError(403, 'Forbidden'));
     });
-}
+};
 
-/**
- *
- * @param req
- * @param res
- */
-export function login(req, res) {
+exports.login = (req, res) => {
   const { idToken } = req.body;
   admin
     .auth()
@@ -38,4 +33,4 @@ export function login(req, res) {
       logger.error(error);
       res.sendStatus(403);
     });
-}
+};

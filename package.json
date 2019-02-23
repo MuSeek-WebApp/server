@@ -1,13 +1,13 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "src/app.js",
+  "main": "src/server.js",
   "private": true,
   "scripts": {
-    "start": "nodemon --exec babel-node ./bin/www",
+    "start": "node -r ./node_modules/dotenv/config dist/server.js",
+    "dev": "nodemon --exec babel-node src/server.js -r ./node_modules/dotenv/config",
     "build": "babel src --out-dir dist",
-    "serve": "node dist/app.js",
-    "debug": "nodemon --exec babel-node --inspect ./bin/www",
+    "test": "NODE_ENV=test babel-node src/server.js -r ./node_modules/dotenv/config",
     "lint": "eslint ./src"
   },
   "husky": {
