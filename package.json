@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node -r ./node_modules/dotenv/config dist/server.js",
     "dev": "nodemon --exec babel-node src/server.js -r ./node_modules/dotenv/config",
+    "debug": "nodemon --exec babel-node --inspect src/server.js -r ./node_modules/dotenv/config",
     "build": "babel src --out-dir dist",
     "test": "NODE_ENV=test babel-node src/server.js -r ./node_modules/dotenv/config",
     "lint": "eslint ./src"
