@@ -41,7 +41,6 @@ exports.register = (req, res) => {
     .auth()
     .createUser({
       email: auth.email,
-      phoneNumber: auth.phoneNumber,
       password: auth.password
     })
     .then((userRecord) => {
