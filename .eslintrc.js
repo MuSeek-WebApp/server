@@ -14,6 +14,7 @@ module.exports = {
   },
   rules: {
     'prettier/prettier': 'warn',
-    'class-methods-use-this': 'off'
+    'class-methods-use-this': 'off',
+    'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement']
   }
 };
