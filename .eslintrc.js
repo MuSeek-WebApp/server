@@ -13,6 +13,7 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    'prettier/prettier': 'error'
+    'prettier/prettier': 'warn',
+    'class-methods-use-this': 'off'
   }
 };
