@@ -4,8 +4,10 @@ import admin from 'firebase-admin';
 import bodyParser from 'body-parser';
 
 import routes from './server.route';
+import apiRoutes from './server.api.route';
 import logger, { stream } from './utils/logger';
 import serviceAccount from './config/serviceAccountKey.json';
+import { auth } from './auth/auth.controller';
 
 const api = express();
 api.use(bodyParser.json());
@@ -17,7 +19,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // mount all routes on /api path
-api.use('/api', routes);
+api.use('/api', auth);
+api.use('/api', apiRoutes);
+api.use('/', routes);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
