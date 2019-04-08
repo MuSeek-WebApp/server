@@ -10,3 +10,14 @@ exports.all = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+exports.filter = async (req, res) => {
+  try {
+    const { genre, city } = req.query;
+    logger.debug(`[band.controller] [filter] genre=${genre} city=${city}`);
+    res.json(BandSrv.filter(await BandSrv.all(), genre, city));
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
