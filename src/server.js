@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import admin from 'firebase-admin';
 import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
 
 import routes from './server.route';
 import apiRoutes from './server.api.route';
@@ -17,6 +18,15 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   api.use(morgan('combined', { stream }));
 }
+
+mongoose
+  .connect(process.env.MONGODB_URL, { useNewUrlParser: true })
+  .then(() => {
+    logger.info('Mongo connection successful');
+  })
+  .catch((err) => {
+    logger.error('Mongo connection error');
+  });
 
 // mount all routes on /api path
 api.use('/api', auth);
