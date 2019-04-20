@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import admin from 'firebase-admin';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 
 import routes from './server.route';
@@ -12,6 +13,7 @@ import { auth } from './auth/auth.controller';
 
 const api = express();
 api.use(bodyParser.json());
+api.use(cookieParser());
 
 if (process.env.NODE_ENV !== 'production') {
   api.use(morgan('dev', { stream }));
