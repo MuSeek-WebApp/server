@@ -20,7 +20,7 @@ exports.findById = (req, res) => {
 
 exports.insertEvent = async (req, res) => {
   try {
-    var newEvent = new eventModel(req.body.event);
+    var newEvent = new eventModel(req.body);
     await newEvent.save();
     res.sendStatus(200);
   } catch (error) {
