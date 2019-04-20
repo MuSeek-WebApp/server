@@ -4,6 +4,6 @@ import * as eventsCtrl from './events.controller';
 
 const router = express.Router();
 
-router.get('/getCurrentMonth', eventsCtrl.getCurrentMonth);
+router.get('/currentMonth', eventsCtrl.currentMonth);
 
 export default router;

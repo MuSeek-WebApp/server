@@ -3,8 +3,7 @@ import * as createError from 'http-errors';
 
 import logger from '../utils/logger';
 
-exports.getCurrentMonth = (req, res) => {
-  const db = admin.database();
-  const ref = db.ref(`events/${times.uid}`);
+exports.currentMonth = (req, res) => {
+  // TODO: call SRV
   res.sendStatus(200);
 };
