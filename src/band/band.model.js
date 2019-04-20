@@ -1,26 +1,15 @@
 import mongoose from 'mongoose';
+import { userOptions, userModel } from '../auth/user.model';
 
-var bandSchema = new mongoose.Schema({
-  //uuid
-  _id: String,
-  address: { ciry: String, country: String, streetAddress: String },
-  bandMembers: [{ name: String, roles: [String] }],
-  contactDetails: {
-    email: String,
-    firstName: String,
-    lastName: String,
-    phoneNumber: String
+var bandSchema = new mongoose.Schema(
+  {
+    bandMembers: [{ name: String, roles: [String] }],
+    genres: [String]
   },
-  description: String,
-  name: String,
-  genres: [String],
-  type: String,
-  reviews: [
-    { description: String, stars: Number, timestamp: Number, user: String }
-  ]
-});
+  userOptions
+);
 
-var bandModel = mongoose.model('Band', bandSchema);
+var bandModel = userModel.discriminator('band', bandSchema);
 module.exports = {
   bandModel: bandModel,
   bandSchema: bandSchema
