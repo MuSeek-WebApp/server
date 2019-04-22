@@ -1,7 +1,7 @@
 import admin from 'firebase-admin';
 import logger from '../utils/logger';
-import { bandModel } from '../band/band.model';
-import { buisnessModel } from '../buisness/buisness.model';
+import { BandModel } from '../band/band.model';
+import { BusinessModel } from '../business/businessModel';
 
 class AuthSrv {
   constructor() {
@@ -30,6 +30,10 @@ class AuthSrv {
     }
   }
 
+  /**
+   * @param userData._id
+   * @param userData.type.band
+   */
   async register(auth, userData) {
     try {
       const userRecord = await admin.auth().createUser({
@@ -40,15 +44,15 @@ class AuthSrv {
       logger.info(`new user created (${userRecord.uid})`);
       userData._id = userRecord.uid;
 
-      let userObj,
-        isBand = !!userData.type.band;
+      let userObj;
+      const isBand = !!userData.type.band;
       delete userData.type;
       if (isBand) {
-        userObj = new bandModel(userData);
+        userObj = new BandModel(userData);
       } else {
-        userObj = new buisnessModel(userData);
+        userObj = new BusinessModel(userData);
       }
-      console.log(JSON.stringify(userData));
+      logger.info(JSON.stringify(userData));
       await userObj.save();
       logger.info('data for new user successfully written to mongo database');
       return userData;

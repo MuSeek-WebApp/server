@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-var options = { discriminatorKey: 'type' };
+const userOptions = { discriminatorKey: 'type' };
 
-var userSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
-    //uuid
+    // uuid
     _id: String,
     address: { city: String, country: String, streetAddress: String },
     contactDetails: {
@@ -26,12 +26,8 @@ var userSchema = new mongoose.Schema(
       youtube: String
     }
   },
-  options
+  userOptions
 );
 
-var userModel = mongoose.model('User', userSchema, 'users');
-module.exports = {
-  userModel: userModel,
-  userSchema: userSchema,
-  userOptions: options
-};
+const UserModel = mongoose.model('User', UserSchema, 'users');
+export { UserModel, UserSchema, userOptions };

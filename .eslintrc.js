@@ -15,6 +15,8 @@ module.exports = {
   rules: {
     'prettier/prettier': 'warn',
     'class-methods-use-this': 'off',
+    'no-param-reassign': [2, { props: false }],
+    'no-underscore-dangle': ['error', { allow: ['_id'] }],
     'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement']
   }
 };
