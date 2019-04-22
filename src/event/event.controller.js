@@ -29,7 +29,7 @@ exports.insertEvent = async (req, res) => {
 
 exports.updateEvent = async (req, res) => {
   try {
-    await eventModel.findByIdAndUpdate(
+    await EventModel.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true },
@@ -46,7 +46,7 @@ exports.updateEvent = async (req, res) => {
 
 exports.removeEvent = async (req, res) => {
   try {
-    await eventModel.findByIdAndRemove(req.params.id, (err, event) => {
+    await EventModel.findByIdAndRemove(req.params.id, (err, event) => {
       if (err) throw err;
       return res.sendStatus(200);
     });
