@@ -1,5 +1,7 @@
 import admin from 'firebase-admin';
 import logger from '../utils/logger';
+import { bandModel } from '../band/band.model';
+import { buisnessModel } from '../buisness/buisness.model';
 
 class AuthSrv {
   constructor() {
@@ -8,8 +10,7 @@ class AuthSrv {
 
   async auth(token) {
     try {
-      await admin.auth().verifyIdToken(token);
-      return true;
+      return admin.auth().verifyIdToken(token);
     } catch (error) {
       logger.error(error);
       return false;
@@ -19,7 +20,9 @@ class AuthSrv {
   async login(token) {
     try {
       const decodedToken = await admin.auth().verifyIdToken(token);
-      logger.info(`User logged in with token=(${decodedToken})`);
+      logger.info(
+        `User logged in with token=(${JSON.stringify(decodedToken)})`
+      );
       return true;
     } catch (error) {
       logger.error(error);
@@ -35,14 +38,22 @@ class AuthSrv {
       });
 
       logger.info(`new user created (${userRecord.uid})`);
-      const db = admin.database();
-      const ref = db.ref(`users/${userRecord.uid}`);
-      await ref.set(userData);
-      logger.info(
-        'data for new user successfully written to firebase database'
-      );
+      userData._id = userRecord.uid;
+
+      let userObj,
+        isBand = !!userData.type.band;
+      delete userData.type;
+      if (isBand) {
+        userObj = new bandModel(userData);
+      } else {
+        userObj = new buisnessModel(userData);
+      }
+      console.log(JSON.stringify(userData));
+      await userObj.save();
+      logger.info('data for new user successfully written to mongo database');
       return userData;
     } catch (error) {
+      logger.error(error);
       return null;
     }
   }
