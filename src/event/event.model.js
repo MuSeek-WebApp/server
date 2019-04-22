@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { bandSchema } from '../band/band.model';
+import { BandSchema } from '../band/band.model';
 
-var eventSchema = new mongoose.Schema({
+const EventSchema = new mongoose.Schema({
   business: String,
   description: String,
   genres: [String],
@@ -14,12 +14,9 @@ var eventSchema = new mongoose.Schema({
   endDate: String,
   startTime: String,
   endTime: String,
-  bands: [bandSchema]
+  bands: [BandSchema]
 });
 
-var eventModel = mongoose.model('Event', eventSchema);
+const EventModel = mongoose.model('Event', EventSchema);
 
-module.exports = {
-  eventModel: eventModel,
-  eventSchema: eventSchema
-};
+export { EventModel, EventSchema };
