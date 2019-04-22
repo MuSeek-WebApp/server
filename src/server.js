@@ -9,7 +9,7 @@ import routes from './server.route';
 import apiRoutes from './server.api.route';
 import logger, { stream } from './utils/logger';
 import serviceAccount from './config/serviceAccountKey.json';
-import { auth } from './auth/auth.controller';
+import * as authCtrl from './auth/auth.controller';
 
 const api = express();
 api.use(bodyParser.json());
@@ -26,12 +26,12 @@ mongoose
   .then(() => {
     logger.info('Mongo connection successful');
   })
-  .catch((err) => {
+  .catch(() => {
     logger.error('Mongo connection error');
   });
 
 // mount all routes on /api path
-api.use('/api', auth);
+api.use('/api', authCtrl.auth);
 api.use('/api', apiRoutes);
 api.use('/', routes);
 
@@ -53,6 +53,9 @@ if (require.main === module) {
   });
 }
 
+/**
+ * @param err.status_code
+ */
 api.use((err, req, res, next) => {
   const status =
     err.status ||
