@@ -14,7 +14,12 @@ const EventSchema = new mongoose.Schema({
   endDate: String,
   startTime: String,
   endTime: String,
-  bands: [BandSchema]
+  requests: [
+    {
+      band: BandSchema,
+      status: String
+    }
+  ]
 });
 
 const EventModel = mongoose.model('Event', EventSchema);
