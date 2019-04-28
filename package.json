@@ -19,6 +19,7 @@
   "dependencies": {
     "app-root-path": "^2.1.0",
     "body-parser": "^1.18.3",
+    "cloudinary": "^1.14.0",
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
     "dotenv": "^6.2.0",
@@ -28,6 +29,7 @@
     "mongodb": "^3.2.3",
     "mongoose": "^5.5.2",
     "morgan": "^1.9.1",
+    "multer": "^1.4.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
