@@ -1,32 +1,20 @@
-import * as admin from 'firebase-admin';
-import logger from '../utils/logger';
+import { BandModel } from './band.model';
 
 class BandSrv {
   async all() {
-    return admin
-      .database()
-      .ref('users')
-      .orderByChild('band')
-      .equalTo(true)
-      .once('value', (bands) => {
-        logger.debug(`[bands.srv] [all] ${JSON.stringify(bands)}`);
-        return bands;
-      });
+    return BandModel.find({});
   }
 
-  filter(bands, genre, city) {
-    const result = {};
-    for (const [id, band] of Object.entries(bands.val())) {
-      const { genres, address } = band;
-      if (
-        genre in genres &&
-        city.toLowerCase() === address.city.toLowerCase()
-      ) {
-        result[id] = band;
-      }
+  async findByName(name) {
+    return BandModel.find({ name: { $regex: `${name}`, $options: 'i' } });
+  }
+
+  async findByAttributes(genres) {
+    const genresRegex = [];
+    for (const genre of genres) {
+      genresRegex.push(new RegExp(`^${genre}$`, 'i'));
     }
-    logger.debug(`[bands.srv] [byGenre] ${JSON.stringify(result)}`);
-    return result;
+    return BandModel.find({ genres: { $in: genresRegex } });
   }
 }
 
