@@ -16,7 +16,14 @@ const UserSchema = new mongoose.Schema(
     description: String,
     name: String,
     reviews: [
-      { description: String, stars: Number, timestamp: Number, user: String }
+      {
+        description: String,
+        stars: Number,
+        timestamp: Number,
+        userId: String,
+        userName: String,
+        photo: String
+      }
     ],
     profiles: {
       facebook: String,
@@ -24,7 +31,8 @@ const UserSchema = new mongoose.Schema(
       spotify: String,
       soundCloud: String,
       youtube: String
-    }
+    },
+    profile_photo: String
   },
   userOptions
 );

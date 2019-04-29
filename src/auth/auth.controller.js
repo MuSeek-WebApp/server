@@ -7,7 +7,6 @@ exports.auth = async (req, res, next) => {
   const { idToken } = req.cookies;
   const isAuth = await AuthService.auth(idToken);
   if (isAuth) {
-    logger.info(`idToken:${idToken} idToken`);
     next();
   } else {
     logger.info(`Token is not authed: ${idToken}`);
