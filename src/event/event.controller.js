@@ -1,5 +1,4 @@
 import { EventModel } from './event.model';
-
 import logger from '../utils/logger';
 
 exports.findAll = async (req, res) => {
@@ -7,6 +6,20 @@ exports.findAll = async (req, res) => {
     logger.info('getting all events');
     res.json(await EventModel.find({}).exec());
   } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
+exports.myEvents = async (req, res) => {
+  try {
+    if (req.reqUser.type === 'band') {
+    } else {
+      res.json(
+        await EventModel.find({ 'business.uid': req.reqUser.uid }).exec()
+      );
+    }
+  } catch {
     logger.error(error);
     res.sendStatus(500);
   }

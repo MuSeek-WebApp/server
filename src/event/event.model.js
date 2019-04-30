@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 import { BandSchema } from '../band/band.model';
+import { BusinessSchema } from '../business/businessModel';
+import { UserSchema } from '../auth/user.model';
 
 const EventSchema = new mongoose.Schema({
-  business: String,
+  business: BusinessSchema,
   description: String,
   genres: [String],
   max_bands_number: Number,
@@ -17,7 +19,15 @@ const EventSchema = new mongoose.Schema({
   requests: [
     {
       band: BandSchema,
-      status: String
+      status: {
+        type: String,
+        enum: [
+          'WAITING_FOR_BAND_APPROVAL',
+          'WAITING_FOR_BUISNESS_APPROVAL',
+          'DENIED',
+          'APPROVED'
+        ]
+      }
     }
   ]
 });
