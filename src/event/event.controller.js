@@ -16,9 +16,9 @@ exports.myEvents = async (req, res) => {
   try {
     if (req.reqUser.type === 'band') {
       res.json(
-        await EventModel.find(
-          { requests: { band: { _id: req.reqUser._id } } },
-          { requests: { $elemMatch: { band: { _id: req.reqUser._id } } } }
+        await EventModel.aggregate(
+          { $unwind: '$requests' },
+          { $match: { 'requests.band._id': req.reqUser._id } }
         ).exec()
       );
     } else {
