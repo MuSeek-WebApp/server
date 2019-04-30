@@ -1,5 +1,6 @@
 import { EventModel } from './event.model';
 import logger from '../utils/logger';
+import { runInNewContext } from 'vm';
 
 exports.findAll = async (req, res) => {
   try {
@@ -14,6 +15,12 @@ exports.findAll = async (req, res) => {
 exports.myEvents = async (req, res) => {
   try {
     if (req.reqUser.type === 'band') {
+      res.json(
+        await EventModel.find(
+          { requests: { band: { _id: req.reqUser._id } } },
+          { requests: { $elemMatch: { band: { _id: req.reqUser._id } } } }
+        )
+      );
     } else {
       res.json(
         await EventModel.find({ 'business._id': req.reqUser._id }).exec()
