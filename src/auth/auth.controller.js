@@ -1,12 +1,14 @@
 import * as createError from 'http-errors';
 import AuthService from './auth.srv';
+import { UserModel } from './user.model';
 
 import logger from '../utils/logger';
 
 exports.auth = async (req, res, next) => {
   const { idToken } = req.cookies;
-  const isAuth = await AuthService.auth(idToken);
-  if (isAuth) {
+  const decodedToken = await AuthService.auth(idToken);
+  if (decodedToken) {
+    req.reqUser = await UserModel.findById(decodedToken.uid).exec();
     logger.info(`idToken:${idToken} idToken`);
     next();
   } else {
