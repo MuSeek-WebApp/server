@@ -19,7 +19,7 @@ exports.myEvents = async (req, res) => {
         await EventModel.find(
           { requests: { band: { _id: req.reqUser._id } } },
           { requests: { $elemMatch: { band: { _id: req.reqUser._id } } } }
-        )
+        ).exec()
       );
     } else {
       res.json(
