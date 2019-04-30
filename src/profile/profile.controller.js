@@ -32,7 +32,7 @@ exports.uploadProfileImage = async (req, res) => {
     );
     if (req.files[0]) {
       const { idToken } = req.cookies;
-      let resUrl = {
+      const resUrl = {
         profile_photo: await ProfileService.saveProfileImage(
           req.files[0],
           idToken

@@ -1,7 +1,7 @@
+import cloudinary from 'cloudinary';
 import logger from '../utils/logger';
 import AuthService from '../auth/auth.srv';
 import { UserModel } from '../auth/user.model';
-import cloudinary from 'cloudinary';
 
 class ProfileService {
   constructor() {
@@ -15,17 +15,14 @@ class ProfileService {
   }
 
   async getProfile(userId) {
-    return await UserModel.findOne({ _id: userId }).exec();
+    return UserModel.findOne({ _id: userId }).exec();
   }
 
   async saveProfileImage(file, userToken) {
     return new Promise(async (resolve) => {
       const userId = await this.getUid(userToken);
       try {
-        this.cloudinary.uploader.upload(file.path, async function(
-          error,
-          result
-        ) {
+        this.cloudinary.uploader.upload(file.path, async (error, result) => {
           await UserModel.findOneAndUpdate(
             { _id: userId },
             { profile_photo: result.url }
