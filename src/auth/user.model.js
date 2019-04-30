@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema(
     ],
     profiles: {
       facebook: String,
-      instegram: String,
+      instagram: String,
       spotify: String,
       soundCloud: String,
       youtube: String

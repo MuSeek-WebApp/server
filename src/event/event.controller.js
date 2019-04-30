@@ -46,7 +46,7 @@ exports.updateEvent = async (req, res) => {
 
 exports.removeEvent = async (req, res) => {
   try {
-    await EventModel.findByIdAndRemove(req.params.id, (err, event) => {
+    await EventModel.findByIdAndRemove(req.params.id, (err) => {
       if (err) throw err;
       return res.sendStatus(200);
     });
