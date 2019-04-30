@@ -24,7 +24,8 @@ const UserSchema = new mongoose.Schema(
       spotify: String,
       soundCloud: String,
       youtube: String
-    }
+    },
+    photos: [String]
   },
   userOptions
 );

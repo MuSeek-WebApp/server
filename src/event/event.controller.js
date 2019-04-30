@@ -40,6 +40,7 @@ exports.findById = (req, res) => {
 exports.insertEvent = async (req, res) => {
   try {
     const newEvent = new EventModel(req.body);
+    newEvent.business = req.reqUser;
     res.json(await newEvent.save());
   } catch (error) {
     logger.error(error);
