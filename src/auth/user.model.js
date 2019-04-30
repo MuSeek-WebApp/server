@@ -32,6 +32,7 @@ const UserSchema = new mongoose.Schema(
       soundCloud: String,
       youtube: String
     },
+    photos: [String],
     profile_photo: String
   },
   userOptions
