@@ -3,8 +3,9 @@ import BandSrv from './band.srv';
 
 exports.all = async (req, res) => {
   try {
-    logger.debug('[band.controller] [all]');
-    res.json(await BandSrv.all());
+    const bands = await BandSrv.all();
+    logger.debug(`[band.controller] [all] bands=${JSON.stringify(bands)}`);
+    res.json(bands);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -13,9 +14,22 @@ exports.all = async (req, res) => {
 
 exports.filter = async (req, res) => {
   try {
-    const { genre, city } = req.query;
-    logger.debug(`[band.controller] [filter] genre=${genre} city=${city}`);
-    res.json(BandSrv.filter(await BandSrv.all(), genre, city));
+    let bands;
+    const { name } = req.query;
+    let { genres } = req.query;
+    if (name) {
+      bands = await BandSrv.findByName(name);
+    } else {
+      if (typeof genres === 'string' || genres instanceof String) {
+        genres = [genres];
+      }
+      bands = await BandSrv.findByAttributes(genres);
+    }
+    logger.debug(
+      `[band.controller] [filter] name=${name} genres=${genres} 
+      bands=${JSON.stringify(bands)}`
+    );
+    res.json(bands);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
