@@ -16,7 +16,7 @@ exports.myEvents = async (req, res) => {
     if (req.reqUser.type === 'band') {
     } else {
       res.json(
-        await EventModel.find({ 'business.uid': req.reqUser.uid }).exec()
+        await EventModel.find({ 'business._id': req.reqUser._id }).exec()
       );
     }
   } catch {
