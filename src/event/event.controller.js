@@ -1,11 +1,9 @@
-import { EventModel } from './event.model';
 import logger from '../utils/logger';
-import { runInNewContext } from 'vm';
+import EventService from './event.srv';
 
 exports.findAll = async (req, res) => {
   try {
-    logger.info('getting all events');
-    res.json(await EventModel.find({}).exec());
+    res.json(EventService.all());
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -15,33 +13,20 @@ exports.findAll = async (req, res) => {
 exports.myEvents = async (req, res) => {
   try {
     if (req.reqUser.type === 'band') {
-      res.json(
-        await EventModel.aggregate([
-          { $unwind: '$requests' },
-          { $match: { 'requests.band._id': req.reqUser._id } }
-        ]).exec()
-      );
+      res.json(await EventService.getArtistEvents(req.reqUser._id));
     } else {
-      res.json(
-        await EventModel.find({ 'business._id': req.reqUser._id }).exec()
-      );
+      res.json(await EventService.getBusinessEvents(req.reqUser._id));
     }
-  } catch {
+  } catch (error) {
     logger.error(error);
     res.sendStatus(500);
   }
 };
 
-exports.findById = (req, res) => {
-  // TODO: call SRV
-  res.sendStatus(200);
-};
-
 exports.insertEvent = async (req, res) => {
   try {
-    const newEvent = new EventModel(req.body);
-    newEvent.business = req.reqUser;
-    res.json(await newEvent.save());
+    const newEvent = await EventService.insert(req.body, req.reqUser);
+    res.json(newEvent);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -50,15 +35,8 @@ exports.insertEvent = async (req, res) => {
 
 exports.updateEvent = async (req, res) => {
   try {
-    await EventModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true },
-      (err, event) => {
-        if (err) throw err;
-        return res.json(event);
-      }
-    );
+    const updatedEvent = await EventService.update(req.body);
+    res.json(updatedEvent);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -67,10 +45,8 @@ exports.updateEvent = async (req, res) => {
 
 exports.removeEvent = async (req, res) => {
   try {
-    await EventModel.findByIdAndRemove(req.params.id, (err) => {
-      if (err) throw err;
-      return res.sendStatus(200);
-    });
+    await EventService.remove(req.params.id);
+    res.sendStatus(200);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
