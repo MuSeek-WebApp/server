@@ -9,7 +9,6 @@ exports.auth = async (req, res, next) => {
   const decodedToken = await AuthService.auth(idToken);
   if (decodedToken) {
     req.reqUser = await UserModel.findById(decodedToken.uid).exec();
-    logger.info(`idToken:${idToken} idToken`);
     next();
   } else {
     logger.info(`Token is not authed: ${idToken}`);
