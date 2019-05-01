@@ -1,6 +1,6 @@
 import { EventModel } from './event.model';
 import logger from '../utils/logger';
-
+import mongoose from 'mongoose';
 class EventService {
   constructor() {
     logger.info('EventService initiated.');
@@ -33,6 +33,20 @@ class EventService {
 
   async remove(id) {
     await EventModel.findByIdAndRemove(id);
+  }
+
+  async updateStatus(eventId, userId, oldStatus, action) {
+    let newStatus = action;
+
+    if (action === 'APPROVED' && oldStatus === 'WAITING_FOR_BAND_APPROVAL') {
+      newStatus = 'WAITING_FOR_BUISNESS_APPROVAL';
+    }
+
+    await EventModel.updateOne(
+      { _id: mongoose.Types.ObjectId(eventId), 'requests.band._id': userId },
+      { $set: { 'requests.$.status': newStatus } }
+    );
+    return newStatus;
   }
 }
 
