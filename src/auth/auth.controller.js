@@ -38,3 +38,8 @@ exports.register = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+exports.getUserData = async (req, res) => {
+  const { idToken } = req.cookies;
+  res.json(await AuthService.getUserData(idToken));
+};

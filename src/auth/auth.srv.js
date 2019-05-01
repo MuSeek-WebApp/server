@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import logger from '../utils/logger';
 import { BandModel } from '../band/band.model';
 import { BusinessModel } from '../business/businessModel';
+import { UserModel } from './user.model';
 
 class AuthSrv {
   constructor() {
@@ -29,7 +30,14 @@ class AuthSrv {
       return false;
     }
   }
-
+  async getUserData(token) {
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      return await UserModel.findById(decodedToken.uid).exec();
+    } catch (error) {
+      logger.error(error);
+    }
+  }
   /**
    * @param userData._id
    * @param userData.type.band
