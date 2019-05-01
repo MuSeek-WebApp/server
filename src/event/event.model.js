@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { BandSchema } from '../band/band.model';
 import { BusinessSchema } from '../business/businessModel';
-import { UserSchema } from '../auth/user.model';
 
 const EventSchema = new mongoose.Schema({
   business: BusinessSchema,

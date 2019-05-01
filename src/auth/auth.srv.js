@@ -30,14 +30,17 @@ class AuthSrv {
       return false;
     }
   }
+
   async getUserData(token) {
     try {
       const decodedToken = await admin.auth().verifyIdToken(token);
       return await UserModel.findById(decodedToken.uid).exec();
     } catch (error) {
       logger.error(error);
+      return null;
     }
   }
+
   /**
    * @param userData._id
    * @param userData.type.band

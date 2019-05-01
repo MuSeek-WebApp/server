@@ -7,28 +7,28 @@ class EventService {
   }
 
   async all() {
-    return await EventModel.find({}).exec();
+    return EventModel.find({}).exec();
   }
 
   async getArtistEvents(userId) {
-    return await EventModel.aggregate([
+    return EventModel.aggregate([
       { $unwind: '$requests' },
       { $match: { 'requests.band._id': userId } }
     ]).exec();
   }
 
   async getBusinessEvents(userId) {
-    return await EventModel.find({ 'business._id': userId }).exec();
+    return EventModel.find({ 'business._id': userId }).exec();
   }
 
   async insert(event, user) {
     const newEvent = new EventModel(event);
     newEvent.business = user;
-    return await newEvent.save();
+    return newEvent.save();
   }
 
   async update(event) {
-    return await EventModel.findByIdAndUpdate(event._id, event, { new: true });
+    return EventModel.findByIdAndUpdate(event._id, event, { new: true });
   }
 
   async remove(id) {
