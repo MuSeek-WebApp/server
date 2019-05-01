@@ -28,21 +28,11 @@ class EventService {
   }
 
   async update(event) {
-    return await EventModel.findByIdAndUpdate(
-      event._id,
-      event,
-      { new: true },
-      (err, updatedEvent) => {
-        if (err) throw err;
-        return updatedEvent;
-      }
-    );
+    return await EventModel.findByIdAndUpdate(event._id, event, { new: true });
   }
 
   async remove(id) {
-    await EventModel.findByIdAndRemove(id, (err) => {
-      if (err) throw err;
-    });
+    await EventModel.findByIdAndRemove(id);
   }
 }
 
