@@ -11,7 +11,6 @@ exports.auth = async (req, res, next) => {
     req.reqUser = await UserModel.findById(decodedToken.uid).exec();
     next();
   } else {
-    logger.info(`Token is not authed: ${idToken}`);
     next(createError(403, 'Forbidden'));
   }
 };
