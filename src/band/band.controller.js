@@ -12,7 +12,7 @@ exports.all = async (req, res) => {
   }
 };
 
-exports.filter = async (req, res) => {
+exports.findBands = async (req, res) => {
   try {
     let bands;
     const { name } = req.query;

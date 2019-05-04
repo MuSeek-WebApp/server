@@ -5,6 +5,6 @@ import * as bandCtrl from './band.controller';
 const router = express.Router();
 
 router.get('/all', bandCtrl.all);
-router.get('/filter', bandCtrl.filter);
+router.get('/findBands', bandCtrl.findBands);
 
 export default router;
