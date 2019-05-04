@@ -8,6 +8,7 @@ router.get('/', eventsCtrl.findAll);
 router.get('/my-events', eventsCtrl.myEvents);
 router.post('/', eventsCtrl.insertEvent);
 router.put('/:id', eventsCtrl.updateEvent);
+router.put('/status/:id', eventsCtrl.updateArtistStatus);
 router.delete('/:id', eventsCtrl.removeEvent);
 
 export default router;

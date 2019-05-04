@@ -1,5 +1,6 @@
 import logger from '../utils/logger';
 import EventService from './event.srv';
+import { readdirSync } from 'fs';
 
 exports.findAll = async (req, res) => {
   try {
@@ -47,6 +48,22 @@ exports.removeEvent = async (req, res) => {
   try {
     await EventService.remove(req.params.id);
     res.sendStatus(200);
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
+exports.updateArtistStatus = async (req, res) => {
+  try {
+    const { event, action } = req.body;
+    const newStatus = await EventService.updateStatus(
+      event._id,
+      req.reqUser._id,
+      event.requests.status,
+      action
+    );
+    res.json(newStatus);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
