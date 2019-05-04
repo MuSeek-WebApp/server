@@ -39,7 +39,7 @@ class EventService {
     let newStatus = action;
 
     if (action === 'APPROVED' && oldStatus === 'WAITING_FOR_BAND_APPROVAL') {
-      newStatus = 'WAITING_FOR_BUISNESS_APPROVAL';
+      newStatus = 'WAITING_FOR_BUSINESS_APPROVAL';
     }
 
     await EventModel.updateOne(
