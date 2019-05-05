@@ -25,8 +25,7 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { auth } = req.body;
-  const { userData } = req.body;
+  const { auth, userData } = req.body;
   const regData = await AuthService.register(auth, userData);
   if (regData) {
     res.sendStatus(200);
