@@ -19,8 +19,7 @@ class ProfileService {
     return UserModel.findOne({ _id: userId }).exec();
   }
 
-  async saveProfileImage(file, userToken) {
-    const userId = await this.getUid(userToken);
+  async saveProfileImage(file, userId) {
     try {
       const uploadAsync = promisify(this.cloudinary.uploader.upload);
       const result = await uploadAsync(file.path);
@@ -31,6 +30,10 @@ class ProfileService {
     } catch (error) {
       logger.error(error);
     }
+  }
+
+  async updateProfileData(profile) {
+    await UserModel.findOneAndUpdate({ _id: profile._id }, profile).exec();
   }
 }
 
