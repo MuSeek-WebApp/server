@@ -7,28 +7,58 @@ class EventService {
   }
 
   async all() {
-    return EventModel.find({}).exec();
+    return await EventModel.find({}).exec();
+  }
+
+  async getFilteredEvents(filter) {
+    let aggregateQuery = [];
+    let matchQuery = {};
+
+    if (filter.genres) {
+      // checks if there is an intersection of one of the genres
+      matchQuery.genres = { $in: filter.genres };
+    }
+    if (filter.name) {
+      matchQuery.name = { $regex: '.*' + filter.name + '.*', $options: 'i' };
+    }
+    if (filter.lowerDateLimit && filter.higherDateLimit) {
+      matchQuery.startDate = {
+        $gte: filter.lowerDateLimit,
+        $lte: filter.higherDateLimit
+      };
+    }
+    if (filter.stars) {
+      // creates and average of buisness stars
+      aggregateQuery.push({
+        $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
+      });
+      matchQuery.buisnessStarsAvg = { $gte: filter.stars };
+      aggregateQuery.push({ $match: matchQuery });
+      return await EventModel.aggregate(aggregateQuery).exec();
+    } else {
+      return await EventModel.find(matchQuery).exec();
+    }
   }
 
   async getArtistEvents(userId) {
-    return EventModel.aggregate([
+    return await EventModel.aggregate([
       { $unwind: '$requests' },
       { $match: { 'requests.band._id': userId } }
     ]).exec();
   }
 
   async getBusinessEvents(userId) {
-    return EventModel.find({ 'business._id': userId }).exec();
+    return await EventModel.find({ 'business._id': userId }).exec();
   }
 
   async insert(event, user) {
     const newEvent = new EventModel(event);
     newEvent.business = user;
-    return newEvent.save();
+    return await newEvent.save();
   }
 
   async update(event) {
-    return EventModel.findByIdAndUpdate(event._id, event, { new: true });
+    return await EventModel.findByIdAndUpdate(event._id, event, { new: true });
   }
 
   async remove(id) {
@@ -46,6 +76,7 @@ class EventService {
       { _id: mongoose.Types.ObjectId(eventId), 'requests.band._id': userId },
       { $set: { 'requests.$.status': newStatus } }
     );
+
     return newStatus;
   }
 }

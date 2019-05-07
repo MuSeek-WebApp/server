@@ -11,6 +11,15 @@ exports.findAll = async (req, res) => {
   }
 };
 
+exports.bandFeed = async (req, res) => {
+  try {
+    res.json(await EventService.getFilteredEvents(req.body));
+  } catch {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
 exports.myEvents = async (req, res) => {
   try {
     if (req.reqUser.type === 'band') {
