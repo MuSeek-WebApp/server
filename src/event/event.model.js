@@ -11,10 +11,8 @@ const EventSchema = new mongoose.Schema({
   name: String,
   open_mic: Boolean,
   payment: Number,
-  startDate: String,
-  endDate: String,
-  startTime: String,
-  endTime: String,
+  startDate: Date,
+  endDate: Date,
   requests: [
     {
       band: BandSchema,
