@@ -10,5 +10,6 @@ router.post('/', eventsCtrl.insertEvent);
 router.put('/:id', eventsCtrl.updateEvent);
 router.put('/status/:id', eventsCtrl.updateArtistStatus);
 router.delete('/:id', eventsCtrl.removeEvent);
+router.post('/my-feed', eventsCtrl.bandFeed);
 
 export default router;
