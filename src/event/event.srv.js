@@ -11,32 +11,36 @@ class EventService {
   }
 
   async getFilteredEvents(filter) {
-    let aggregateQuery = [];
-    let matchQuery = {};
-
-    if (filter.genres) {
-      // checks if there is an intersection of one of the genres
-      matchQuery.genres = { $in: filter.genres };
-    }
-    if (filter.name) {
-      matchQuery.name = { $regex: '.*' + filter.name + '.*', $options: 'i' };
-    }
-    if (filter.lowerDateLimit && filter.higherDateLimit) {
-      matchQuery.startDate = {
-        $gte: filter.lowerDateLimit,
-        $lte: filter.higherDateLimit
-      };
-    }
-    if (filter.stars) {
-      // creates and average of buisness stars
-      aggregateQuery.push({
-        $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
-      });
-      matchQuery.buisnessStarsAvg = { $gte: filter.stars };
-      aggregateQuery.push({ $match: matchQuery });
-      return await EventModel.aggregate(aggregateQuery).exec();
+    if (!filter) {
+      return await EventModel.find().exec();
     } else {
-      return await EventModel.find(matchQuery).exec();
+      let aggregateQuery = [];
+      let matchQuery = {};
+
+      if (filter.genres) {
+        // checks if there is an intersection of one of the genres
+        matchQuery.genres = { $in: filter.genres };
+      }
+      if (filter.name) {
+        matchQuery.name = { $regex: '.*' + filter.name + '.*', $options: 'i' };
+      }
+      if (filter.lowerDateLimit && filter.higherDateLimit) {
+        matchQuery.startDate = {
+          $gte: filter.lowerDateLimit,
+          $lte: filter.higherDateLimit
+        };
+      }
+      if (filter.stars) {
+        // creates and average of buisness stars
+        aggregateQuery.push({
+          $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
+        });
+        matchQuery.buisnessStarsAvg = { $gte: filter.stars };
+        aggregateQuery.push({ $match: matchQuery });
+        return await EventModel.aggregate(aggregateQuery).exec();
+      } else {
+        return await EventModel.find(matchQuery).exec();
+      }
     }
   }
 
