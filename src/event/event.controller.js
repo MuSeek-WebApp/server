@@ -13,6 +13,12 @@ exports.findAll = async (req, res) => {
 
 exports.bandFeed = async (req, res) => {
   try {
+    logger.info(
+      'User ' +
+        req.reqUser._id +
+        ' requested filtered events with this filter: ' +
+        JSON.stringify(req.body, null, 2)
+    );
     res.json(await EventService.getFilteredEvents(req.body));
   } catch {
     logger.error(error);
