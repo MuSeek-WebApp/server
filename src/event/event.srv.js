@@ -11,12 +11,15 @@ class EventService {
   }
 
   async getFilteredEvents(filter) {
+    const sortingFields = { startDate: 1 };
+
     if (!filter) {
-      return await EventModel.find().exec();
+      return await EventModel.find()
+        .sort(sortingFields)
+        .exec();
     } else {
       let aggregateQuery = [];
       let matchQuery = {};
-      const sortingFields = { startDate: 1 };
 
       if (filter.genres && filter.genres.length != 0) {
         // checks if there is an intersection of one of the genres
