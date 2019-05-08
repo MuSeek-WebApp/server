@@ -16,8 +16,9 @@ class EventService {
     } else {
       let aggregateQuery = [];
       let matchQuery = {};
+      const sortingFields = { startDate: 1 };
 
-      if (filter.genres) {
+      if (filter.genres && filter.genres.length != 0) {
         // checks if there is an intersection of one of the genres
         matchQuery.genres = { $in: filter.genres };
       }
@@ -37,9 +38,13 @@ class EventService {
         });
         matchQuery.buisnessStarsAvg = { $gte: filter.stars };
         aggregateQuery.push({ $match: matchQuery });
-        return await EventModel.aggregate(aggregateQuery).exec();
+        return await EventModel.aggregate(aggregateQuery)
+          .sort(sortingFields)
+          .exec();
       } else {
-        return await EventModel.find(matchQuery).exec();
+        return await EventModel.find(matchQuery)
+          .sort(sortingFields)
+          .exec();
       }
     }
   }
