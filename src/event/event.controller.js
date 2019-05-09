@@ -1,6 +1,8 @@
 import logger from '../utils/logger';
 import EventService from './event.srv';
 import { readdirSync } from 'fs';
+import { BandModel } from '../band/band.model';
+import { BusinessModel } from '../business/businessModel';
 
 exports.findAll = async (req, res) => {
   try {
@@ -19,8 +21,8 @@ exports.bandFeed = async (req, res) => {
         ' requested filtered events with this filter: ' +
         JSON.stringify(req.body, null, 2)
     );
-    res.json(await EventService.getFilteredEvents(req.body));
-  } catch {
+    res.json(await EventService.getFilteredEvents(req.body, req.reqUser._id));
+  } catch (error) {
     logger.error(error);
     res.sendStatus(500);
   }
@@ -69,18 +71,81 @@ exports.removeEvent = async (req, res) => {
   }
 };
 
-exports.updateArtistStatus = async (req, res) => {
-  try {
-    const { event, action } = req.body;
-    const newStatus = await EventService.updateStatus(
-      event._id,
-      req.reqUser._id,
-      event.requests.status,
-      action
+exports.registerBand = async (req, res) => {
+  const { event, band } = req.body;
+  const { reqUser } = req;
+  if (reqUser instanceof BandModel) {
+    try {
+      await EventService.addRequest(
+        event._id,
+        reqUser,
+        'WAITING_FOR_BUISNESS_APPROVAL'
+      );
+      res.sendStatus(200);
+    } catch (error) {
+      logger.error(error);
+      res.sendStatus(500);
+    }
+  } else if (reqUser._id == event.business._id) {
+    try {
+      res.json(
+        await EventService.addRequest(
+          event._id,
+          band,
+          'WAITING_FOR_BAND_APPROVAL'
+        )
+      );
+    } catch (error) {
+      logger.error(error);
+      res.sendStatus(500);
+    }
+  } else {
+    res.send(
+      400,
+      'User has not been recognized as a band or as the event owner'
     );
-    res.json(newStatus);
-  } catch (error) {
-    logger.error(error);
-    res.sendStatus(500);
+  }
+};
+
+exports.approveBand = async (req, res) => {
+  const { reqUser } = req;
+  const { event, bandId } = req.body;
+
+  if (!EventService.isEventfull(event._id)) {
+    if (reqUser instanceof BandModel) {
+      try {
+        await EventService.updateRequeset(
+          event._id,
+          reqUser._id,
+          'WAITING_FOR_BAND_APPROVAL',
+          'APPROVED'
+        );
+        res.sendStatus(200);
+      } catch (error) {
+        logger.error(error);
+        res.sendStatus(500);
+      }
+    } else if (reqUser._id == event.business._id) {
+      try {
+        res.json(
+          await EventService.updateRequeset(
+            event._id,
+            bandId,
+            'WAITING_FOR_BUISNESS_APPROVAL',
+            'APPROVED'
+          )
+        );
+      } catch (error) {
+        logger.error(error);
+        res.sendStatus(500);
+      }
+    } else {
+      res.send(
+        400,
+        'User has not been recognized as a band or as the event owner'
+      );
+    }
+  } else {
+    res.json({ eventFull: true });
   }
 };

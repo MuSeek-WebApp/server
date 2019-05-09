@@ -8,8 +8,9 @@ router.get('/', eventsCtrl.findAll);
 router.get('/my-events', eventsCtrl.myEvents);
 router.post('/', eventsCtrl.insertEvent);
 router.put('/:id', eventsCtrl.updateEvent);
-router.put('/status/:id', eventsCtrl.updateArtistStatus);
 router.delete('/:id', eventsCtrl.removeEvent);
 router.post('/my-feed', eventsCtrl.bandFeed);
+router.post('register-band', eventsCtrl.registerBand);
+router.post('approve-band', eventsCtrl.approveBand);
 
 export default router;
