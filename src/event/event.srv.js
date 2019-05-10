@@ -138,7 +138,7 @@ class EventService {
         }
       }
     });
-    matchQuery.$expr = { $eq: ['$approvedReq', '$max_bands_number'] };
+    matchQuery.$expr = { $gte: ['$approvedReq', '$max_bands_number'] };
     matchQuery._id = eventId;
     aggregateQuery.push(matchQuery);
     EventModel.aggregate(aggregateQuery).then(function(res) {
