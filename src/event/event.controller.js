@@ -79,7 +79,7 @@ exports.registerBand = async (req, res) => {
       await EventService.addRequest(
         event._id,
         reqUser,
-        'WAITING_FOR_BUISNESS_APPROVAL'
+        'WAITING_FOR_BUSINESS_APPROVAL'
       );
       res.sendStatus(200);
     } catch (error) {
@@ -131,7 +131,7 @@ exports.approveBand = async (req, res) => {
           await EventService.updateRequeset(
             event._id,
             bandId,
-            'WAITING_FOR_BUISNESS_APPROVAL',
+            'WAITING_FOR_BUSINESS_APPROVAL',
             'APPROVED'
           )
         );
