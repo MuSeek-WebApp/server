@@ -10,7 +10,11 @@ class EventService {
     return await EventModel.find({}).exec();
   }
 
-  async getFilteredEvents(filter) {
+  async findById(id) {
+    return await EventModel.findById(id).exec();
+  }
+
+  async getFilteredEvents(filter, userId) {
     const sortingFields = { startDate: 1 };
 
     if (!filter) {
@@ -21,7 +25,7 @@ class EventService {
       let aggregateQuery = [];
       let matchQuery = {};
 
-      if (filter.genres && filter.genres.length != 0) {
+      if (filter.genres && filter.genres.length > 0) {
         // checks if there is an intersection of one of the genres
         matchQuery.genres = { $in: filter.genres };
       }
@@ -30,8 +34,8 @@ class EventService {
       }
       if (filter.lowerDateLimit && filter.higherDateLimit) {
         matchQuery.startDate = {
-          $gte: filter.lowerDateLimit,
-          $lte: filter.higherDateLimit
+          $gte: new Date(filter.lowerDateLimit),
+          $lte: new Date(filter.higherDateLimit)
         };
       }
       if (filter.stars) {
@@ -40,15 +44,41 @@ class EventService {
           $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
         });
         matchQuery.buisnessStarsAvg = { $gte: filter.stars };
-        aggregateQuery.push({ $match: matchQuery });
-        return await EventModel.aggregate(aggregateQuery)
-          .sort(sortingFields)
-          .exec();
-      } else {
-        return await EventModel.find(matchQuery)
-          .sort(sortingFields)
-          .exec();
       }
+
+      // filter events who achieved max bands
+      aggregateQuery.push({
+        $addFields: {
+          approvedReq: {
+            $size: {
+              $filter: {
+                input: '$requests',
+                as: 'req',
+                cond: { $eq: ['$$req.status', 'APPROVED'] }
+              }
+            }
+          }
+        }
+      });
+      matchQuery.$expr = { $lt: ['$approvedReq', '$max_bands_number'] };
+      aggregateQuery.push({ $match: matchQuery });
+
+      // filter requests of other bands
+      aggregateQuery.push({
+        $addFields: {
+          requests: {
+            $filter: {
+              input: '$requests',
+              as: 'req',
+              cond: { $eq: ['$$req.band._id', userId] }
+            }
+          }
+        }
+      });
+
+      return await EventModel.aggregate(aggregateQuery)
+        .sort(sortingFields)
+        .exec();
     }
   }
 
@@ -69,6 +99,31 @@ class EventService {
     return await newEvent.save();
   }
 
+  async addRequest(eventId, band, status) {
+    return await EventModel.findOneAndUpdate(
+      { _id: eventId, 'requests.band._id': { $ne: band._id } },
+      { $addToSet: { requests: { band: band, status: status } } }
+    ).exec();
+  }
+
+  async updateRequest(eventId, bandId, status, oldStatus) {
+    let requestsFilter;
+    if (oldStatus) {
+      requestsFilter = {
+        $elemMatch: { 'band._id': bandId, status: oldStatus }
+      };
+    } else {
+      requestsFilter = { $elemMatch: { 'band._id': bandId } };
+    }
+    return await EventModel.findOneAndUpdate(
+      {
+        _id: eventId,
+        requests: requestsFilter
+      },
+      { $set: { 'requests.$.status': status } }
+    ).exec();
+  }
+
   async update(event) {
     return await EventModel.findByIdAndUpdate(event._id, event, { new: true });
   }
@@ -77,19 +132,29 @@ class EventService {
     await EventModel.findByIdAndRemove(id);
   }
 
-  async updateStatus(eventId, userId, oldStatus, action) {
-    let newStatus = action;
-
-    if (action === 'APPROVED' && oldStatus === 'WAITING_FOR_BAND_APPROVAL') {
-      newStatus = 'WAITING_FOR_BUSINESS_APPROVAL';
-    }
-
-    await EventModel.updateOne(
-      { _id: mongoose.Types.ObjectId(eventId), 'requests.band._id': userId },
-      { $set: { 'requests.$.status': newStatus } }
-    );
-
-    return newStatus;
+  isEventfull(eventId) {
+    let aggregateQuery = [];
+    let matchQuery = {};
+    
+    aggregateQuery.push({
+      $addFields: {
+        approvedReq: {
+          $size: {
+            $filter: {
+              input: '$requests',
+              as: 'req',
+              cond: { $eq: ['$$req.status', 'APPROVED'] }
+            }
+          }
+        }
+      }
+    });
+    matchQuery.$expr = { $gte: ['$approvedReq', '$max_bands_number'] };
+    matchQuery._id = eventId;
+    aggregateQuery.push(matchQuery);
+    EventModel.aggregate(aggregateQuery).then(function(res) {
+      return !!res.length;
+    });
   }
 }
 

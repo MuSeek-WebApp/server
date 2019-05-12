@@ -1,10 +1,21 @@
 import logger from '../utils/logger';
 import EventService from './event.srv';
 import { readdirSync } from 'fs';
+import { BandModel } from '../band/band.model';
+import { BusinessModel } from '../business/businessModel';
 
 exports.findAll = async (req, res) => {
   try {
     res.json(EventService.all());
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
+exports.findById = async (req, res) => {
+  try {
+    res.json(EventService.findById(req.params.id));
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -19,8 +30,9 @@ exports.bandFeed = async (req, res) => {
         ' requested filtered events with this filter: ' +
         JSON.stringify(req.body, null, 2)
     );
-    res.json(await EventService.getFilteredEvents(req.body));
-  } catch {
+
+    res.json(await EventService.getFilteredEvents(req.body, req.reqUser._id));
+  } catch (error) {
     logger.error(error);
     res.sendStatus(500);
   }
@@ -69,16 +81,86 @@ exports.removeEvent = async (req, res) => {
   }
 };
 
-exports.updateArtistStatus = async (req, res) => {
-  try {
-    const { event, action } = req.body;
-    const newStatus = await EventService.updateStatus(
-      event._id,
-      req.reqUser._id,
-      event.requests.status,
-      action
+exports.registerBand = async (req, res) => {
+  const { event, band } = req.body;
+  const { reqUser } = req;
+  let status, registeredBand;
+
+  if (reqUser instanceof BandModel) {
+    status = 'WAITING_FOR_BUSINESS_APPROVAL';
+    registeredBand = reqUser;
+  } else if (reqUser._id == event.business._id) {
+    status = 'WAITING_FOR_BAND_APPROVAL';
+    registeredBand = band;
+  } else {
+    return res.send(
+      400,
+      'User has not been recognized as a band or as the event owner'
     );
-    res.json(newStatus);
+  }
+
+  try {
+    await EventService.addRequest(event._id, registeredBand, status);
+    res.sendStatus(200);
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
+exports.approveBand = async (req, res) => {
+  const { reqUser } = req;
+  const { event, bandId } = req.body;
+  let status, oldStatus, approvedBandId;
+
+  if (reqUser instanceof BandModel) {
+    approvedBandId = reqUser._id;
+    status = 'WAITING_FOR_BUSINESS_APPROVAL';
+    oldStatus = 'WAITING_FOR_BAND_APPROVAL';
+  } else if (reqUser._id == event.business._id) {
+    status = 'APPROVED';
+    oldStatus = 'WAITING_FOR_BUSINESS_APPROVAL';
+    approvedBandId = bandId;
+  } else {
+    return res.send(
+      400,
+      'User has not been recognized as a band or as the event owner'
+    );
+  }
+
+  try {
+    await EventService.updateRequest(
+      event._id,
+      approvedBandId,
+      status,
+      oldStatus
+    );
+    res.sendStatus(200);
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
+exports.denyBand = async (req, res) => {
+  const { reqUser } = req;
+  const { event, bandId } = req.body;
+  let deniedBandId;
+
+  if (reqUser instanceof BandModel) {
+    deniedBandId = reqUser._id;
+  } else if (reqUser._id == event.business._id) {
+    deniedBandId = bandId;
+  } else {
+    return res.send(
+      400,
+      'User has not been recognized as a band or as the event owner'
+    );
+  }
+
+  try {
+    await EventService.updateRequest(event._id, deniedBandId, 'DENIED');
+    res.sendStatus(200);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);

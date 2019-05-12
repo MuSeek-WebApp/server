@@ -20,7 +20,7 @@ const EventSchema = new mongoose.Schema({
         type: String,
         enum: [
           'WAITING_FOR_BAND_APPROVAL',
-          'WAITING_FOR_BUISNESS_APPROVAL',
+          'WAITING_FOR_BUSINESS_APPROVAL',
           'DENIED',
           'APPROVED'
         ]
