@@ -145,3 +145,30 @@ exports.approveBand = async (req, res) => {
     );
   }
 };
+
+exports.denyBand = async (req, res) => {
+  const { reqUser } = req;
+  const { event, bandId } = req.body;
+
+  if (reqUser instanceof BandModel) {
+    try {
+      await EventService.updateRequeset(event._id, reqUser._id, 'DENIED');
+      res.sendStatus(200);
+    } catch (error) {
+      logger.error(error);
+      res.sendStatus(500);
+    }
+  } else if (reqUser._id == event.business._id) {
+    try {
+      res.json(await EventService.updateRequeset(event._id, bandId, 'DENIED'));
+    } catch (error) {
+      logger.error(error);
+      res.sendStatus(500);
+    }
+  } else {
+    res.send(
+      400,
+      'User has not been recognized as a band or as the event owner'
+    );
+  }
+};

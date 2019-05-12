@@ -12,5 +12,6 @@ router.delete('/:id', eventsCtrl.removeEvent);
 router.post('/my-feed', eventsCtrl.bandFeed);
 router.post('/register-band', eventsCtrl.registerBand);
 router.post('/approve-band', eventsCtrl.approveBand);
+router.post('/deny-band', eventsCtrl.denyBand);
 
 export default router;

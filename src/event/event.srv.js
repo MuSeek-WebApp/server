@@ -113,6 +113,16 @@ class EventService {
     ).exec();
   }
 
+  async updateRequeset(eventId, bandId, status) {
+    return await EventModel.findOneAndUpdate(
+      {
+        _id: eventId,
+        requests: { $elemMatch: { 'band._id': bandId } }
+      },
+      { $set: { 'requests.$.status': status } }
+    ).exec();
+  }
+
   async update(event) {
     return await EventModel.findByIdAndUpdate(event._id, event, { new: true });
   }
