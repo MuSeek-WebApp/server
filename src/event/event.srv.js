@@ -43,7 +43,6 @@ class EventService {
         aggregateQuery.push({
           $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
         });
-
         matchQuery.buisnessStarsAvg = { $gte: filter.stars };
       }
 
@@ -136,7 +135,7 @@ class EventService {
   isEventfull(eventId) {
     let aggregateQuery = [];
     let matchQuery = {};
-
+    
     aggregateQuery.push({
       $addFields: {
         approvedReq: {

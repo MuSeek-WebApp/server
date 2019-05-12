@@ -30,6 +30,7 @@ exports.bandFeed = async (req, res) => {
         ' requested filtered events with this filter: ' +
         JSON.stringify(req.body, null, 2)
     );
+
     res.json(await EventService.getFilteredEvents(req.body, req.reqUser._id));
   } catch (error) {
     logger.error(error);
