@@ -103,21 +103,19 @@ class EventService {
     ).exec();
   }
 
-  async updateRequeset(eventId, bandId, oldStatus, status) {
+  async updateRequest(eventId, bandId, status, oldStatus) {
+    let requestsFilter;
+    if (oldStatus) {
+      requestsFilter = {
+        $elemMatch: { 'band._id': bandId, status: oldStatus }
+      };
+    } else {
+      requestsFilter = { $elemMatch: { 'band._id': bandId } };
+    }
     return await EventModel.findOneAndUpdate(
       {
         _id: eventId,
-        requests: { $elemMatch: { 'band._id': bandId, status: oldStatus } }
-      },
-      { $set: { 'requests.$.status': status } }
-    ).exec();
-  }
-
-  async updateRequeset(eventId, bandId, status) {
-    return await EventModel.findOneAndUpdate(
-      {
-        _id: eventId,
-        requests: { $elemMatch: { 'band._id': bandId } }
+        requests: requestsFilter
       },
       { $set: { 'requests.$.status': status } }
     ).exec();
