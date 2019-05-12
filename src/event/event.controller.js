@@ -15,7 +15,7 @@ exports.findAll = async (req, res) => {
 
 exports.findById = async (req, res) => {
   try {
-    res.json(EventService.findById(req.body.id));
+    res.json(EventService.findById(req.params.id));
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
