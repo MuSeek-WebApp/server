@@ -10,6 +10,10 @@ class EventService {
     return await EventModel.find({}).exec();
   }
 
+  async findById(id) {
+    return await EventModel.findById(id).exec();
+  }
+
   async getFilteredEvents(filter, userId) {
     const sortingFields = { startDate: 1 };
 

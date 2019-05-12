@@ -13,6 +13,15 @@ exports.findAll = async (req, res) => {
   }
 };
 
+exports.findById = async (req, res) => {
+  try {
+    res.json(EventService.findById(req.body.id));
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
 exports.bandFeed = async (req, res) => {
   try {
     logger.info(
