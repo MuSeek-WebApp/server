@@ -10,7 +10,7 @@ router.post('/', eventsCtrl.insertEvent);
 router.put('/:id', eventsCtrl.updateEvent);
 router.delete('/:id', eventsCtrl.removeEvent);
 router.post('/my-feed', eventsCtrl.bandFeed);
-router.post('register-band', eventsCtrl.registerBand);
-router.post('approve-band', eventsCtrl.approveBand);
+router.post('/register-band', eventsCtrl.registerBand);
+router.post('/approve-band', eventsCtrl.approveBand);
 
 export default router;
