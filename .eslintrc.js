@@ -17,6 +17,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'no-param-reassign': [2, { props: false }],
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
-    'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement']
+    'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement'],
+    'linebreak-style': 'off'
   }
 };

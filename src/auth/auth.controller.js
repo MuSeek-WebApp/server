@@ -8,10 +8,8 @@ exports.auth = async (req, res, next) => {
   const decodedToken = await AuthService.auth(idToken);
   if (decodedToken) {
     req.reqUser = await UserModel.findById(decodedToken.uid).exec();
-    logger.info(`idToken:${idToken} idToken`);
     next();
   } else {
-    logger.info(`Token is not authed: ${idToken}`);
     next(createError(403, 'Forbidden'));
   }
 };
@@ -28,8 +26,7 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { auth } = req.body;
-  const { userData } = req.body;
+  const { auth, userData } = req.body;
   const regData = await AuthService.register(auth, userData);
   if (regData) {
     res.sendStatus(200);
