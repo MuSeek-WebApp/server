@@ -74,13 +74,14 @@ exports.removeEvent = async (req, res) => {
 exports.registerBand = async (req, res) => {
   const { event, band } = req.body;
   const { reqUser } = req;
-  let status;
+  let status, registeredBand;
 
   if (reqUser instanceof BandModel) {
     status = 'WAITING_FOR_BUSINESS_APPROVAL';
-    band = reqUser;
+    registeredBand = reqUser;
   } else if (reqUser._id == event.business._id) {
     status = 'WAITING_FOR_BAND_APPROVAL';
+    registeredBand = band;
   } else {
     return res.send(
       400,
@@ -89,7 +90,7 @@ exports.registerBand = async (req, res) => {
   }
 
   try {
-    await EventService.addRequest(event._id, band, status);
+    await EventService.addRequest(event._id, registeredBand, status);
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -100,15 +101,16 @@ exports.registerBand = async (req, res) => {
 exports.approveBand = async (req, res) => {
   const { reqUser } = req;
   const { event, bandId } = req.body;
-  let status, oldStatus;
+  let status, oldStatus, approvedBandId;
 
   if (reqUser instanceof BandModel) {
-    bandId = reqUser._id;
+    approvedBandId = reqUser._id;
     status = 'WAITING_FOR_BUSINESS_APPROVAL';
     oldStatus = 'WAITING_FOR_BAND_APPROVAL';
   } else if (reqUser._id == event.business._id) {
     status = 'APPROVED';
     oldStatus = 'WAITING_FOR_BUSINESS_APPROVAL';
+    approvedBandId = bandId;
   } else {
     return res.send(
       400,
@@ -117,7 +119,12 @@ exports.approveBand = async (req, res) => {
   }
 
   try {
-    await EventService.updateRequest(event._id, bandId, status, oldStatus);
+    await EventService.updateRequest(
+      event._id,
+      approvedBandId,
+      status,
+      oldStatus
+    );
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -128,10 +135,12 @@ exports.approveBand = async (req, res) => {
 exports.denyBand = async (req, res) => {
   const { reqUser } = req;
   const { event, bandId } = req.body;
+  let deniedBandId;
 
   if (reqUser instanceof BandModel) {
-    bandId = reqUser._id;
+    deniedBandId = reqUser._id;
   } else if (reqUser._id == event.business._id) {
+    deniedBandId = bandId;
   } else {
     return res.send(
       400,
@@ -140,7 +149,7 @@ exports.denyBand = async (req, res) => {
   }
 
   try {
-    await EventService.updateRequest(event._id, bandId, 'DENIED');
+    await EventService.updateRequest(event._id, deniedBandId, 'DENIED');
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
