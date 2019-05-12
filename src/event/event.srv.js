@@ -30,8 +30,8 @@ class EventService {
       }
       if (filter.lowerDateLimit && filter.higherDateLimit) {
         matchQuery.startDate = {
-          $gte: filter.lowerDateLimit,
-          $lte: filter.higherDateLimit
+          $gte: new Date(filter.lowerDateLimit),
+          $lte: new Date(filter.higherDateLimit)
         };
       }
       if (filter.stars) {

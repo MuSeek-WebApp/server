@@ -74,6 +74,7 @@ exports.removeEvent = async (req, res) => {
 exports.registerBand = async (req, res) => {
   const { event, band } = req.body;
   const { reqUser } = req;
+
   if (reqUser instanceof BandModel) {
     try {
       await EventService.addRequest(
