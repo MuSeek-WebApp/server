@@ -1,8 +1,7 @@
+/* eslint-disable consistent-return */
 import logger from '../utils/logger';
 import EventService from './event.srv';
-import { readdirSync } from 'fs';
 import { BandModel } from '../band/band.model';
-import { BusinessModel } from '../business/businessModel';
 
 exports.findAll = async (req, res) => {
   try {
@@ -25,10 +24,13 @@ exports.findById = async (req, res) => {
 exports.bandFeed = async (req, res) => {
   try {
     logger.info(
-      'User ' +
-        req.reqUser._id +
-        ' requested filtered events with this filter: ' +
-        JSON.stringify(req.body, null, 2)
+      `User ${
+        req.reqUser._id
+      } requested filtered events with this filter: ${JSON.stringify(
+        req.body,
+        null,
+        2
+      )}`
     );
 
     res.json(await EventService.getFilteredEvents(req.body, req.reqUser._id));
@@ -84,12 +86,13 @@ exports.removeEvent = async (req, res) => {
 exports.registerBand = async (req, res) => {
   const { event, band } = req.body;
   const { reqUser } = req;
-  let status, registeredBand;
+  let status;
+  let registeredBand;
 
   if (reqUser instanceof BandModel) {
     status = 'WAITING_FOR_BUSINESS_APPROVAL';
     registeredBand = reqUser;
-  } else if (reqUser._id == event.business._id) {
+  } else if (reqUser._id === event.business._id) {
     status = 'WAITING_FOR_BAND_APPROVAL';
     registeredBand = band;
   } else {
@@ -111,13 +114,15 @@ exports.registerBand = async (req, res) => {
 exports.approveBand = async (req, res) => {
   const { reqUser } = req;
   const { event, bandId } = req.body;
-  let status, oldStatus, approvedBandId;
+  let status;
+  let oldStatus;
+  let approvedBandId;
 
   if (reqUser instanceof BandModel) {
     approvedBandId = reqUser._id;
     status = 'WAITING_FOR_BUSINESS_APPROVAL';
     oldStatus = 'WAITING_FOR_BAND_APPROVAL';
-  } else if (reqUser._id == event.business._id) {
+  } else if (reqUser._id === event.business._id) {
     status = 'APPROVED';
     oldStatus = 'WAITING_FOR_BUSINESS_APPROVAL';
     approvedBandId = bandId;
@@ -149,7 +154,7 @@ exports.denyBand = async (req, res) => {
 
   if (reqUser instanceof BandModel) {
     deniedBandId = reqUser._id;
-  } else if (reqUser._id == event.business._id) {
+  } else if (reqUser._id === event.business._id) {
     deniedBandId = bandId;
   } else {
     return res.send(

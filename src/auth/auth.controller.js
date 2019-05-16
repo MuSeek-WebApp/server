@@ -1,7 +1,6 @@
 import * as createError from 'http-errors';
 import AuthService from './auth.srv';
 import { UserModel } from './user.model';
-import logger from '../utils/logger';
 
 exports.auth = async (req, res, next) => {
   const { idToken } = req.cookies;
