@@ -2,7 +2,7 @@ import cloudinary from 'cloudinary';
 import { promisify } from 'util';
 import logger from '../utils/logger';
 import AuthService from '../auth/auth.srv';
-import { UserModel } from '../auth/user.model';
+import { UserModel } from '../user/user.model';
 
 class ProfileService {
   constructor() {

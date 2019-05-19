@@ -2,7 +2,7 @@ import admin from 'firebase-admin';
 import logger from '../utils/logger';
 import { BandModel } from '../band/band.model';
 import { BusinessModel } from '../business/businessModel';
-import { UserModel } from './user.model';
+import { UserModel } from '../user/user.model';
 
 class AuthSrv {
   constructor() {

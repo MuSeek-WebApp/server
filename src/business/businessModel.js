@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { userOptions, UserModel } from '../auth/user.model';
+import { userOptions, UserModel } from '../user/user.model';
 
 const BusinessSchema = new mongoose.Schema({}, userOptions);
 

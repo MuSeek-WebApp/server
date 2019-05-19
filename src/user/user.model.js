@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema(
       {
         description: String,
         stars: Number,
-        timestamp: Number,
+        timestamp: Date,
         userId: String,
         userName: String,
         photo: String
