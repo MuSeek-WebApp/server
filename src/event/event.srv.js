@@ -1,6 +1,8 @@
+/* eslint-disable no-return-await */
+/* eslint-disable func-names */
 import { EventModel } from './event.model';
 import logger from '../utils/logger';
-import mongoose from 'mongoose';
+
 class EventService {
   constructor() {
     logger.info('EventService initiated.');
@@ -21,65 +23,65 @@ class EventService {
       return await EventModel.find()
         .sort(sortingFields)
         .exec();
-    } else {
-      let aggregateQuery = [];
-      let matchQuery = {};
+    }
 
-      if (filter.genres && filter.genres.length > 0) {
-        // checks if there is an intersection of one of the genres
-        matchQuery.genres = { $in: filter.genres };
-      }
-      if (filter.name) {
-        matchQuery.name = { $regex: '.*' + filter.name + '.*', $options: 'i' };
-      }
-      if (filter.lowerDateLimit && filter.higherDateLimit) {
-        matchQuery.startDate = {
-          $gte: new Date(filter.lowerDateLimit),
-          $lte: new Date(filter.higherDateLimit)
-        };
-      }
-      if (filter.stars) {
-        // creates and average of buisness stars
-        aggregateQuery.push({
-          $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
-        });
-        matchQuery.buisnessStarsAvg = { $gte: filter.stars };
-      }
+    const aggregateQuery = [];
+    const matchQuery = {};
 
-      // filter events who achieved max bands
+    if (filter.genres && filter.genres.length > 0) {
+      // checks if there is an intersection of one of the genres
+      matchQuery.genres = { $in: filter.genres };
+    }
+    if (filter.name) {
+      matchQuery.name = { $regex: `.*${filter.name}.*`, $options: 'i' };
+    }
+    if (filter.lowerDateLimit && filter.higherDateLimit) {
+      matchQuery.startDate = {
+        $gte: new Date(filter.lowerDateLimit),
+        $lte: new Date(filter.higherDateLimit)
+      };
+    }
+    if (filter.stars) {
+      // creates and average of buisness stars
       aggregateQuery.push({
-        $addFields: {
-          approvedReq: {
-            $size: {
-              $filter: {
-                input: '$requests',
-                as: 'req',
-                cond: { $eq: ['$$req.status', 'APPROVED'] }
-              }
-            }
-          }
-        }
+        $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
       });
-      matchQuery.$expr = { $lt: ['$approvedReq', '$max_bands_number'] };
-      aggregateQuery.push({ $match: matchQuery });
+      matchQuery.buisnessStarsAvg = { $gte: filter.stars };
+    }
 
-      // filter requests of other bands
-      aggregateQuery.push({
-        $addFields: {
-          requests: {
+    // filter events who achieved max bands
+    aggregateQuery.push({
+      $addFields: {
+        approvedReq: {
+          $size: {
             $filter: {
               input: '$requests',
               as: 'req',
-              cond: { $eq: ['$$req.band._id', userId] }
+              cond: { $eq: ['$$req.status', 'APPROVED'] }
             }
           }
         }
-      });
+      }
+    });
+    matchQuery.$expr = { $lt: ['$approvedReq', '$max_bands_number'] };
+    aggregateQuery.push({ $match: matchQuery });
 
-      return await EventModel.aggregate(aggregateQuery)
-        .sort(sortingFields)
-        .exec();
-    }
+    // filter requests of other bands
+    aggregateQuery.push({
+      $addFields: {
+        requests: {
+          $filter: {
+            input: '$requests',
+            as: 'req',
+            cond: { $eq: ['$$req.band._id', userId] }
+          }
+        }
+      }
+    });
+
+    return await EventModel.aggregate(aggregateQuery)
+      .sort(sortingFields)
+      .exec();
   }
 
   async getArtistEvents(userId) {
@@ -102,7 +104,7 @@ class EventService {
   async addRequest(eventId, band, status) {
     return await EventModel.findOneAndUpdate(
       { _id: eventId, 'requests.band._id': { $ne: band._id } },
-      { $addToSet: { requests: { band: band, status: status } } }
+      { $addToSet: { requests: { band, status } } }
     ).exec();
   }
 
@@ -129,13 +131,13 @@ class EventService {
   }
 
   async remove(id) {
-    await EventModel.findByIdAndRemove(id);
+    return await EventModel.findByIdAndRemove(id);
   }
 
   isEventfull(eventId) {
-    let aggregateQuery = [];
-    let matchQuery = {};
-    
+    const aggregateQuery = [];
+    const matchQuery = {};
+
     aggregateQuery.push({
       $addFields: {
         approvedReq: {
