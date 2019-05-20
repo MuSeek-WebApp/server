@@ -44,6 +44,17 @@ class UserService {
       }
     ]).exec();
   }
+
+  async getRating(userId) {
+    return UserModel.aggregate([
+      { $match: { _id: userId } },
+      {
+        $project: {
+          avgRating: { $avg: '$reviews.stars' }
+        }
+      }
+    ]).exec();
+  }
 }
 
 export default new UserService();

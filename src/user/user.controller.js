@@ -45,3 +45,13 @@ export async function postReview(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function getRating(req, res) {
+  try {
+    const userId = req.params.id;
+    res.json(await UserService.getRating(userId));
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+}
