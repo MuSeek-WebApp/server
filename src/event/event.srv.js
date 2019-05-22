@@ -1,5 +1,7 @@
 /* eslint-disable no-return-await */
 /* eslint-disable func-names */
+import cloudinary from 'cloudinary';
+import { promisify } from 'util';
 import { EventModel } from './event.model';
 import logger from '../utils/logger';
 
@@ -124,6 +126,11 @@ class EventService {
       },
       { $set: { 'requests.$.status': status } }
     ).exec();
+  }
+
+  async uploadImage(file) {
+    const uploadAsync = promisify(this.cloudinary.uploader.upload);
+    return uploadAsync(file.path);
   }
 
   async update(event) {

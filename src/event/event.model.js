@@ -26,7 +26,8 @@ const EventSchema = new mongoose.Schema({
         ]
       }
     }
-  ]
+  ],
+  photos: [String]
 });
 
 const EventModel = mongoose.model('Event', EventSchema);
