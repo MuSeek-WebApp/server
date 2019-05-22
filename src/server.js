@@ -1,4 +1,3 @@
-import express from 'express';
 import morgan from 'morgan';
 import admin from 'firebase-admin';
 import bodyParser from 'body-parser';
@@ -7,11 +6,12 @@ import mongoose from 'mongoose';
 
 import routes from './server.route';
 import apiRoutes from './server.api.route';
+import { wsServer, wsRouter } from './server.ws.route';
 import logger, { stream } from './utils/logger';
 import serviceAccount from './config/serviceAccountKey.json';
 import * as authCtrl from './auth/auth.controller';
 
-const api = express();
+const api = wsServer.app;
 api.use(bodyParser.json());
 api.use(cookieParser());
 
@@ -31,6 +31,8 @@ mongoose
   });
 
 // mount all routes on /api path
+
+api.use('/ws', wsRouter);
 api.use('/api', authCtrl.auth);
 api.use('/api', apiRoutes);
 api.use('/', routes);
