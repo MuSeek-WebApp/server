@@ -53,7 +53,7 @@ exports.myEvents = async (req, res) => {
   }
 };
 
-exports.insertEvent = async (req, res) => {
+exports.insertEvent = async (req, res, next) => {
   try {
     const newEvent = await EventService.insert(req.body, req.reqUser);
     res.json(newEvent);
@@ -61,9 +61,11 @@ exports.insertEvent = async (req, res) => {
     logger.error(error);
     res.sendStatus(500);
   }
+
+  next();
 };
 
-exports.updateEvent = async (req, res) => {
+exports.updateEvent = async (req, res, next) => {
   try {
     const updatedEvent = await EventService.update(req.body);
     res.json(updatedEvent);
@@ -71,9 +73,11 @@ exports.updateEvent = async (req, res) => {
     logger.error(error);
     res.sendStatus(500);
   }
+
+  next();
 };
 
-exports.removeEvent = async (req, res) => {
+exports.removeEvent = async (req, res, next) => {
   try {
     await EventService.remove(req.params.id);
     res.sendStatus(200);
@@ -81,9 +85,11 @@ exports.removeEvent = async (req, res) => {
     logger.error(error);
     res.sendStatus(500);
   }
+
+  next();
 };
 
-exports.registerBand = async (req, res) => {
+exports.registerBand = async (req, res, next) => {
   const { event, band } = req.body;
   const { reqUser } = req;
   let status;
@@ -109,9 +115,11 @@ exports.registerBand = async (req, res) => {
     logger.error(error);
     res.sendStatus(500);
   }
+
+  next();
 };
 
-exports.approveBand = async (req, res) => {
+exports.approveBand = async (req, res, next) => {
   const { reqUser } = req;
   const { event, bandId } = req.body;
   let status;
@@ -145,9 +153,11 @@ exports.approveBand = async (req, res) => {
     logger.error(error);
     res.sendStatus(500);
   }
+
+  next();
 };
 
-exports.denyBand = async (req, res) => {
+exports.denyBand = async (req, res, next) => {
   const { reqUser } = req;
   const { event, bandId } = req.body;
   let deniedBandId;
@@ -170,4 +180,6 @@ exports.denyBand = async (req, res) => {
     logger.error(error);
     res.sendStatus(500);
   }
+
+  next();
 };

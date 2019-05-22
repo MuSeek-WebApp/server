@@ -1,6 +1,7 @@
 import express from 'express';
 
 import * as eventsCtrl from './event.controller';
+import * as wsService from '../ws/ws.srv';
 
 const router = express.Router();
 
@@ -14,5 +15,15 @@ router.post('/my-feed', eventsCtrl.bandFeed);
 router.post('/register-band', eventsCtrl.registerBand);
 router.post('/approve-band', eventsCtrl.approveBand);
 router.post('/deny-band', eventsCtrl.denyBand);
+
+// update webSocket clients
+router.use(
+  ['/register-band', '/approve-band', '/deny-band', '/', '/:id'],
+  (req) => {
+    if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+      wsService.broadcastRefreshEvents();
+    }
+  }
+);
 
 export default router;
