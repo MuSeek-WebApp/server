@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 import logger from '../utils/logger';
 import EventService from './event.srv';
 import { BandModel } from '../band/band.model';
@@ -102,7 +101,7 @@ exports.registerBand = async (req, res, next) => {
     status = 'WAITING_FOR_BAND_APPROVAL';
     registeredBand = band;
   } else {
-    return res.send(
+    res.send(
       400,
       'User has not been recognized as a band or as the event owner'
     );
@@ -135,7 +134,7 @@ exports.approveBand = async (req, res, next) => {
     oldStatus = 'WAITING_FOR_BUSINESS_APPROVAL';
     approvedBandId = bandId;
   } else {
-    return res.send(
+    res.send(
       400,
       'User has not been recognized as a band or as the event owner'
     );
@@ -167,7 +166,7 @@ exports.denyBand = async (req, res, next) => {
   } else if (reqUser._id === event.business._id) {
     deniedBandId = bandId;
   } else {
-    return res.send(
+    res.send(
       400,
       'User has not been recognized as a band or as the event owner'
     );

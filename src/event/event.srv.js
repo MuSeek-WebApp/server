@@ -1,5 +1,3 @@
-/* eslint-disable no-return-await */
-/* eslint-disable func-names */
 import cloudinary from 'cloudinary';
 import { promisify } from 'util';
 import { EventModel } from './event.model';
@@ -12,18 +10,18 @@ class EventService {
   }
 
   async all() {
-    return await EventModel.find({}).exec();
+    return EventModel.find({}).exec();
   }
 
   async findById(id) {
-    return await EventModel.findById(id).exec();
+    return EventModel.findById(id).exec();
   }
 
   async getFilteredEvents(filter, userId) {
     const sortingFields = { startDate: 1 };
 
     if (!filter) {
-      return await EventModel.find()
+      return EventModel.find()
         .sort(sortingFields)
         .exec();
     }
@@ -45,7 +43,7 @@ class EventService {
       };
     }
     if (filter.stars) {
-      // creates and average of buisness stars
+      // creates and average of business stars
       aggregateQuery.push({
         $addFields: { buisnessStarsAvg: { $avg: '$business.reviews.stars' } }
       });
@@ -82,30 +80,30 @@ class EventService {
       }
     });
 
-    return await EventModel.aggregate(aggregateQuery)
+    return EventModel.aggregate(aggregateQuery)
       .sort(sortingFields)
       .exec();
   }
 
   async getArtistEvents(userId) {
-    return await EventModel.aggregate([
+    return EventModel.aggregate([
       { $unwind: '$requests' },
       { $match: { 'requests.band._id': userId } }
     ]).exec();
   }
 
   async getBusinessEvents(userId) {
-    return await EventModel.find({ 'business._id': userId }).exec();
+    return EventModel.find({ 'business._id': userId }).exec();
   }
 
   async insert(event, user) {
     const newEvent = new EventModel(event);
     newEvent.business = user;
-    return await newEvent.save();
+    return newEvent.save();
   }
 
   async addRequest(eventId, band, status) {
-    return await EventModel.findOneAndUpdate(
+    return EventModel.findOneAndUpdate(
       { _id: eventId, 'requests.band._id': { $ne: band._id } },
       { $addToSet: { requests: { band, status } } }
     ).exec();
@@ -120,7 +118,7 @@ class EventService {
     } else {
       requestsFilter = { $elemMatch: { 'band._id': bandId } };
     }
-    return await EventModel.findOneAndUpdate(
+    return EventModel.findOneAndUpdate(
       {
         _id: eventId,
         requests: requestsFilter
@@ -135,11 +133,11 @@ class EventService {
   }
 
   async update(event) {
-    return await EventModel.findByIdAndUpdate(event._id, event, { new: true });
+    return EventModel.findByIdAndUpdate(event._id, event, { new: true });
   }
 
   async remove(id) {
-    return await EventModel.findByIdAndRemove(id);
+    await EventModel.findByIdAndRemove(id);
   }
 
   isEventfull(eventId) {
@@ -162,7 +160,7 @@ class EventService {
     matchQuery.$expr = { $gte: ['$approvedReq', '$max_bands_number'] };
     matchQuery._id = eventId;
     aggregateQuery.push(matchQuery);
-    EventModel.aggregate(aggregateQuery).then(function(res) {
+    EventModel.aggregate(aggregateQuery).then((res) => {
       return !!res.length;
     });
   }
