@@ -187,7 +187,8 @@ exports.denyBand = async (req, res, next) => {
 exports.uploadImage = async (req, res) => {
   try {
     const { files } = req;
-    res.json(await EventService.addImage(files[0]));
+    const result = await EventService.uploadImage(files[0]);
+    res.json(result);
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);

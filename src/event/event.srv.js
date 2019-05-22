@@ -8,6 +8,7 @@ import logger from '../utils/logger';
 class EventService {
   constructor() {
     logger.info('EventService initiated.');
+    this.cloudinary = cloudinary.v2;
   }
 
   async all() {
