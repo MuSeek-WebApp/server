@@ -13,6 +13,18 @@ exports.auth = async (req, res, next) => {
   }
 };
 
+exports.checkAuth = async (req, res) => {
+  const { idToken } = req.cookies;
+  try {
+    const decodedToken = await AuthService.auth(idToken);
+    if (decodedToken) {
+      res.sendStatus(200);
+    }
+  } catch (error) {
+    res.sendStatus(403);
+  }
+};
+
 exports.login = async (req, res) => {
   const { idToken } = req.body;
   const auth = await AuthService.login(idToken);
