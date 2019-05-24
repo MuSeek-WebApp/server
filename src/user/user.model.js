@@ -18,10 +18,12 @@ const UserSchema = new mongoose.Schema(
     reviews: [
       {
         description: String,
-        stars: Number,
+        like: Number,
+        dislike: Number,
         timestamp: Date,
         userId: String,
         userName: String,
+        eventId: String,
         photo: String
       }
     ],
