@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema(
         userId: String,
         userName: String,
         eventId: String,
+        eventName: String,
         photo: String
       }
     ],
