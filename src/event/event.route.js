@@ -9,6 +9,7 @@ const upload = multer({ dest: 'uploads/' });
 
 router.get('/', eventsCtrl.findAll);
 router.get('/id/:id', eventsCtrl.findById);
+router.get('/reviews/:id', eventsCtrl.getReviews);
 router.get('/my-events', eventsCtrl.myEvents);
 router.post('/', eventsCtrl.insertEvent);
 router.put('/:id', eventsCtrl.updateEvent);

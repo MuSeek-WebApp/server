@@ -3,8 +3,8 @@ import UserService from './user.srv';
 
 export async function filterReviews(req, res) {
   try {
-    const { sortType, userId } = req.body;
-    res.json(await UserService.filterReviews(sortType, userId));
+    const { userId } = req.body;
+    res.json(await UserService.filterReviews(userId));
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -38,18 +38,18 @@ export async function updateReview(req, res) {
 export async function postReview(req, res) {
   try {
     const { userId, review } = req.body;
-    await UserService.addReview(userId, review);
-    res.sendStatus(200);
+    const result = await UserService.addReview(userId, review);
+    res.json(result.reviews.filter((rev) => rev.eventId === review.eventId));
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
   }
 }
 
-export async function getRating(req, res) {
+export async function getLikesAndDislikes(req, res) {
   try {
     const userId = req.params.id;
-    res.json(await UserService.getRating(userId));
+    res.json(await UserService.getLikesAndDislikes(userId));
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
