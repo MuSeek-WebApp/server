@@ -10,12 +10,7 @@ class AuthSrv {
   }
 
   async auth(token) {
-    try {
-      return admin.auth().verifyIdToken(token);
-    } catch (error) {
-      logger.error(error);
-      return false;
-    }
+    return admin.auth().verifyIdToken(token);
   }
 
   async login(token) {

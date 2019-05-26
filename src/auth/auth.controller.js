@@ -1,6 +1,7 @@
 import * as createError from 'http-errors';
 import AuthService from './auth.srv';
 import { UserModel } from '../user/user.model';
+import logger from '../utils/logger';
 
 exports.auth = async (req, res, next) => {
   const { idToken } = req.cookies;
@@ -16,14 +17,19 @@ exports.auth = async (req, res, next) => {
 exports.checkAuth = async (req, res) => {
   const { idToken } = req.cookies;
   try {
-    const decodedToken = await AuthService.auth(idToken);
-    if (decodedToken) {
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(403);
-    }
+    await AuthService.auth(idToken);
+    res.sendStatus(200);
   } catch (error) {
-    res.sendStatus(500);
+    logger.error(error);
+    switch (error.code) {
+      case 'auth/id-token-expired': {
+        res.sendStatus(401);
+        break;
+      }
+      default: {
+        res.sendStatus(403);
+      }
+    }
   }
 };
 
