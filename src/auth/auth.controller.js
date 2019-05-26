@@ -19,9 +19,11 @@ exports.checkAuth = async (req, res) => {
     const decodedToken = await AuthService.auth(idToken);
     if (decodedToken) {
       res.sendStatus(200);
+    } else {
+      res.sendStatus(403);
     }
   } catch (error) {
-    res.sendStatus(403);
+    res.sendStatus(500);
   }
 };
 
