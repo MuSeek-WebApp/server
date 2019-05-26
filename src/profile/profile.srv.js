@@ -33,7 +33,7 @@ class ProfileService {
   }
 
   async updateProfileData(profile) {
-    await UserModel.findOneAndUpdate({ _id: profile._id }, profile).exec();
+    await UserModel.replaceOne({ _id: profile._id }, profile).exec();
   }
 }
 
