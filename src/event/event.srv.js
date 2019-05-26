@@ -1,6 +1,8 @@
 import cloudinary from 'cloudinary';
 import { promisify } from 'util';
 import { EventModel } from './event.model';
+import { UserModel } from '../user/user.model';
+
 import logger from '../utils/logger';
 
 class EventService {
@@ -11,6 +13,24 @@ class EventService {
 
   async all() {
     return EventModel.find({}).exec();
+  }
+
+  async getReviews(id) {
+    return UserModel.aggregate([
+      { $match: { 'reviews.eventId': id } },
+      {
+        $project: {
+          _id: '$_id',
+          reviews: {
+            $filter: {
+              input: '$reviews',
+              as: 'review',
+              cond: { $eq: ['$$review.eventId', id] }
+            }
+          }
+        }
+      }
+    ]).exec();
   }
 
   async findById(id) {

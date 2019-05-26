@@ -20,6 +20,15 @@ exports.findById = async (req, res) => {
   }
 };
 
+exports.getReviews = async (req, res) => {
+  try {
+    res.json(await EventService.getReviews(req.params.id));
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+};
+
 exports.bandFeed = async (req, res) => {
   try {
     logger.info(

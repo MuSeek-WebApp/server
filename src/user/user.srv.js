@@ -9,7 +9,8 @@ class UserService {
   async addReview(userId, review) {
     return UserModel.findOneAndUpdate(
       { _id: userId },
-      { $addToSet: { reviews: review } }
+      { $addToSet: { reviews: review } },
+      { new: true }
     ).exec();
   }
 
@@ -27,11 +28,25 @@ class UserService {
     ).exec();
   }
 
-  async filterReviews(sortType, userId) {
+  async getLikesAndDislikes(userId) {
+    return UserModel.aggregate([
+      { $match: { _id: userId } },
+      { $unwind: '$reviews' },
+      {
+        $group: {
+          _id: '$_id',
+          likes: { $sum: '$reviews.like' },
+          dislikes: { $sum: '$reviews.dislike' }
+        }
+      }
+    ]).exec();
+  }
+
+  async filterReviews(userId) {
     const sortingFields = {
-      'reviews.timestamp': -1,
-      'reviews.stars': sortType
+      'reviews.timestamp': -1
     };
+
     return UserModel.aggregate([
       { $match: { _id: userId } },
       { $unwind: '$reviews' },
@@ -40,17 +55,6 @@ class UserService {
         $group: {
           _id: '$_id',
           reviews: { $push: '$reviews' }
-        }
-      }
-    ]).exec();
-  }
-
-  async getRating(userId) {
-    return UserModel.aggregate([
-      { $match: { _id: userId } },
-      {
-        $project: {
-          avgRating: { $avg: '$reviews.stars' }
         }
       }
     ]).exec();
