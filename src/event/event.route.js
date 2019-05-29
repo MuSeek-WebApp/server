@@ -12,6 +12,7 @@ router.get('/id/:id', eventsCtrl.findById);
 router.get('/reviews/:id', eventsCtrl.getReviews);
 router.get('/my-events', eventsCtrl.myEvents);
 router.post('/', eventsCtrl.insertEvent);
+router.post('/recommend', eventsCtrl.recommendBands);
 router.put('/:id', eventsCtrl.updateEvent);
 router.delete('/:id', eventsCtrl.removeEvent);
 router.post('/my-feed', eventsCtrl.bandFeed);

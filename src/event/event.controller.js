@@ -1,6 +1,8 @@
 import logger from '../utils/logger';
 import EventService from './event.srv';
 import { BandModel } from '../band/band.model';
+import RecommendationService from '../recommendation/recommendation.srv';
+import BandSrv from '../band/band.srv';
 
 exports.findAll = async (req, res) => {
   try {
@@ -200,5 +202,27 @@ exports.uploadImage = async (req, res) => {
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
+  }
+};
+
+exports.recommendBands = async (req, res) => {
+  try {
+    const recommendedBands = await RecommendationService.getRecommendation(
+      req.body.bands
+    );
+
+    const bandIds = Object.keys(recommendedBands);
+    const bands = await BandSrv.findByIds(bandIds);
+    bands.forEach((band, idx) => {
+      bands[idx].shows_in_similar_events = recommendedBands[band._id];
+    });
+
+    bands.sort((a, b) => {
+      return b.shows_in_similar_events - a.shows_in_similar_events;
+    });
+
+    res.json(bands);
+  } catch (err) {
+    logger.error(err);
   }
 };

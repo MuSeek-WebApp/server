@@ -15,6 +15,12 @@ class BandSrv {
       .exec();
   }
 
+  async findByIds(bandIds) {
+    return BandModel.find({ _id: { $in: bandIds } })
+      .lean()
+      .exec();
+  }
+
   async findByAttributes(genres) {
     const genresRegex = [];
     for (const genre of genres) {
