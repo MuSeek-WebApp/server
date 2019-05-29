@@ -206,25 +206,23 @@ exports.uploadImage = async (req, res) => {
 };
 
 exports.recommendBands = async (req, res) => {
-  RecommendationService.getRecommendation(req.body.bands).then(
-    (recommendedBands) => {
-      const bandIds = Object.keys(recommendedBands);
+  try {
+    const recommendedBands = await RecommendationService.getRecommendation(
+      req.body.bands
+    );
 
-      BandSrv.findByIds(bandIds)
-        .then((bands) => {
-          bands.forEach((band, idx) => {
-            bands[idx].shows_in_similar_events = recommendedBands[band._id];
-          });
+    const bandIds = Object.keys(recommendedBands);
+    const bands = await BandSrv.findByIds(bandIds);
+    bands.forEach((band, idx) => {
+      bands[idx].shows_in_similar_events = recommendedBands[band._id];
+    });
 
-          bands.sort((a, b) => {
-            return b.shows_in_similar_events - a.shows_in_similar_events;
-          });
+    bands.sort((a, b) => {
+      return b.shows_in_similar_events - a.shows_in_similar_events;
+    });
 
-          res.json(bands);
-        })
-        .catch((err) => {
-          logger.error(err);
-        });
-    }
-  );
+    res.json(bands);
+  } catch (err) {
+    logger.error(err);
+  }
 };
