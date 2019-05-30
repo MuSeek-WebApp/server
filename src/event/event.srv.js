@@ -40,14 +40,16 @@ class EventService {
   async getFilteredEvents(filter, userId) {
     const sortingFields = { startDate: 1 };
 
+    // this if statement always false, beacuse you sent {} from the controller to the filter parameter
     if (!filter) {
-      return EventModel.find()
+      return EventModel.find({ startDate: { $gte: new Date() } })
         .sort(sortingFields)
         .exec();
     }
 
     const aggregateQuery = [];
     const matchQuery = {};
+    matchQuery.startDate = { $gte: new Date() };
 
     if (filter.genres && filter.genres.length > 0) {
       // checks if there is an intersection of one of the genres
@@ -108,7 +110,9 @@ class EventService {
   async getArtistEvents(userId) {
     return EventModel.aggregate([
       { $unwind: '$requests' },
-      { $match: { 'requests.band._id': userId } }
+      {
+        $match: { 'requests.band._id': userId, startDate: { $gte: new Date() } }
+      }
     ]).exec();
   }
 
