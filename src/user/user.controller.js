@@ -25,9 +25,8 @@ export async function removeReview(req, res) {
 
 export async function updateReview(req, res) {
   try {
-    const { review } = req.body;
     const userId = req.params.id;
-    await UserService.updateReview(userId, review);
+    await UserService.updateReview(userId, req.body);
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
