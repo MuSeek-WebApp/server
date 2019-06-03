@@ -19,9 +19,12 @@ class BandSrv {
     return BandModel.aggregate([
       { $match: { genres: { $in: genres } } },
       {
-        $addFields: { likes: { $avg: '$reviews.like' } }
+        $addFields: { likesAvg: { $avg: '$reviews.like' } }
       },
-      { $sort: { likes: -1 } }
+      {
+        $addFields: { likesSum: { $sum: '$reviews.like' } }
+      },
+      { $sort: { likesAvg: -1, likesSum: -1 } }
     ]).exec();
   }
 
