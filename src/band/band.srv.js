@@ -15,6 +15,19 @@ class BandSrv {
       .exec();
   }
 
+  async getTopRatedBandsByGenre(genres) {
+    return BandModel.aggregate([
+      { $match: { genres: { $in: genres } } },
+      {
+        $addFields: {
+          likesAvg: { $avg: '$reviews.like' },
+          likesSum: { $sum: '$reviews.like' }
+        }
+      },
+      { $sort: { likesAvg: -1, likesSum: -1 } }
+    ]).exec();
+  }
+
   async findByIds(bandIds) {
     return BandModel.find({ _id: { $in: bandIds } })
       .lean()

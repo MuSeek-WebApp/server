@@ -206,6 +206,10 @@ exports.uploadImage = async (req, res) => {
 };
 
 exports.recommendBands = async (req, res) => {
+  if (!req.body.bands || req.body.bands.length === 0) {
+    res.json(await BandSrv.getTopRatedBandsByGenre(req.body.genres));
+    return;
+  }
   try {
     const recommendedBands = await RecommendationService.getRecommendation(
       req.body.bands
