@@ -1,6 +1,7 @@
 # Dev
 node_modules
 dist
+view
 .env
 
 # Private

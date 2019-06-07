@@ -3,6 +3,8 @@ import admin from 'firebase-admin';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
+import path from 'path';
+import express from 'express';
 
 import routes from './server.route';
 import apiRoutes from './server.api.route';
@@ -31,7 +33,8 @@ mongoose
   });
 
 // mount all routes on /api path
-
+api.use(express.static(path.join(__dirname, '../view')));
+api.set('views', path.join(__dirname, '../view'));
 api.use('/ws', wsRouter);
 api.use('/api', authCtrl.auth);
 api.use('/api', apiRoutes);
