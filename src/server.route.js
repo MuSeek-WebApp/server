@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import authRoutes from './auth/auth.route';
 
 const router = express.Router(); // eslint-disable-line new-cap
@@ -8,7 +9,7 @@ router.get('/health-check', (req, res) => res.send('OK'));
 router.use('/auth', authRoutes);
 
 router.get('/', (req, res) => {
-  res.render('index', { title: 'Museek' });
+  res.sendfile(path.join(__dirname, '../view/index.html'));
 });
 
 export default router;

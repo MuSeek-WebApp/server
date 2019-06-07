@@ -35,7 +35,6 @@ mongoose
 // mount all routes on /api path
 api.use(express.static(path.join(__dirname, '../view')));
 api.set('views', path.join(__dirname, '../view'));
-api.set('view engine', 'jade');
 api.use('/ws', wsRouter);
 api.use('/api', authCtrl.auth);
 api.use('/api', apiRoutes);
