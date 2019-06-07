@@ -7,4 +7,8 @@ router.get('/health-check', (req, res) => res.send('OK'));
 // mount auth routes at /auth
 router.use('/auth', authRoutes);
 
+router.get('/', (req, res) => {
+  res.render('index', { title: 'Museek' });
+});
+
 export default router;
