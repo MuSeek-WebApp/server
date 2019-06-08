@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "node -r ./node_modules/dotenv/config dist/server.js",
-    "python": "pip install numpy pymongo pandas datetime",
+    "python": "pip3 install numpy pymongo pandas datetime",
     "dev": "npm run python & nodemon --exec babel-node src/server.js -r ./node_modules/dotenv/config",
     "debug": "nodemon --exec babel-node --inspect src/server.js -r ./node_modules/dotenv/config",
     "build": "babel src --out-dir dist",
