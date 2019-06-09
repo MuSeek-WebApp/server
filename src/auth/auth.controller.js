@@ -45,8 +45,8 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { auth, userData } = req.body;
-  const regData = await AuthService.register(auth, userData);
+  const { auth, userData, profile_photo } = req.body;
+  const regData = await AuthService.register(auth, userData, profile_photo);
   if (regData) {
     res.sendStatus(200);
   } else {
@@ -57,4 +57,19 @@ exports.register = async (req, res) => {
 exports.getUserData = async (req, res) => {
   const { idToken } = req.cookies;
   res.json(await AuthService.getUserData(idToken));
+};
+
+exports.uploadProfilePic = async (req, res) => {
+  try {
+    logger.debug(`[auth.controller] [uploadProfilePic: ${req.files.length}]`);
+    if (req.files[0]) {
+      const resUrl = {
+        profile_picture: await AuthService.uploadToCloudinary(req.files[0])
+      };
+      res.status(200).json(resUrl);
+    }
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
 };
