@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node -r ./node_modules/dotenv/config dist/server.js",
     "python": "pip3 install numpy pymongo pandas datetime",
-    "dev": "npm run python & nodemon --exec babel-node src/server.js -r ./node_modules/dotenv/config",
+    "dev": "npm run python & nodemon --delay 2 --exec babel-node src/server.js -r ./node_modules/dotenv/config",
     "debug": "nodemon --exec babel-node --inspect src/server.js -r ./node_modules/dotenv/config",
     "build": "babel src --out-dir dist",
     "test": "NODE_ENV=test babel-node src/server.js -r ./node_modules/dotenv/config",
