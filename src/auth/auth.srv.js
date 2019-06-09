@@ -1,4 +1,6 @@
 import admin from 'firebase-admin';
+import cloudinary from 'cloudinary';
+import { promisify } from 'util';
 import logger from '../utils/logger';
 import { BandModel } from '../band/band.model';
 import { BusinessModel } from '../business/businessModel';
@@ -7,6 +9,7 @@ import { UserModel } from '../user/user.model';
 class AuthSrv {
   constructor() {
     logger.info('AuthService initiated.');
+    this.cloudinary = cloudinary.v2;
   }
 
   async auth(token) {
@@ -40,7 +43,7 @@ class AuthSrv {
    * @param userData._id
    * @param userData.type.band
    */
-  async register(auth, userData) {
+  async register(auth, userData, profile_photo) {
     try {
       const userRecord = await admin.auth().createUser({
         email: auth.email,
@@ -49,6 +52,7 @@ class AuthSrv {
 
       logger.info(`new user created (${userRecord.uid})`);
       userData._id = userRecord.uid;
+      userData.profile_photo = profile_photo;
 
       let userObj;
       const isBand = !!userData.type.band;
@@ -66,6 +70,17 @@ class AuthSrv {
       logger.error(error);
       return null;
     }
+  }
+
+  async uploadToCloudinary(file) {
+    let result;
+    try {
+      const uploadAsync = promisify(this.cloudinary.uploader.upload);
+      result = await uploadAsync(file.path);
+    } catch (error) {
+      logger.error(error);
+    }
+    return result;
   }
 }
 
