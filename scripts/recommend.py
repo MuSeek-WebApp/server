@@ -6,6 +6,7 @@ import pandas as pd
 from pymongo import MongoClient
 import datetime as datetime
 import collections
+import math
 
 MongoClient = MongoClient('mongodb://193.106.55.129:23777/')
 db = MongoClient.Museek
@@ -15,6 +16,7 @@ bandsIds = list(db.users.find({'type': 'band', 'reviews.1': {'$exists': 'true'}}
 eventIdArr = []
 bandIdArr = []
 requestedBands = np.array(json.loads(sys.argv[1]))
+#requestedBands = ['441776537198933.5']
 
 event_corr_score = int(float(sys.argv[2]))
 
@@ -46,19 +48,50 @@ movieslikeSelected = learningMat.corrwith(selected_event)
 corr_table = pd.DataFrame(movieslikeSelected, columns=['Correlation'])
 sorted_corr = corr_table.sort_values('Correlation', ascending=False).head(20)
 sorted_corr = sorted_corr[sorted_corr['Correlation'] > event_corr_score]
+
 recommendedBands = {}
 
+
+# new
+
+rotatedMat = learningMat.T
+requestedBandsDataMat = rotatedMat[requestedBands]
+requestedBandsDataMat.fillna(0)
 for index, row in sorted_corr.iterrows():
     for eventObj in evnetsIds:
-        if (str(eventObj['_id']) == row.name):
+        if str(eventObj['_id']) == index:
             for reqInEvent in eventObj['requests']:
-                if reqInEvent['band']['_id'] in recommendedBands:
-                    recommendedBands[reqInEvent['band']['_id']] += 1
-                else:
-                    recommendedBands[reqInEvent['band']['_id']] = 1
+                if reqInEvent['band']['_id'] not in recommendedBands:
+                    if reqInEvent['band']['_id'] in rotatedMat:
+                        rawRecommendedBands = pd.DataFrame(requestedBandsDataMat.corrwith(rotatedMat[reqInEvent['band']['_id']]), columns=['Correlation'])
+                        rawRecommendedBands = rawRecommendedBands[rawRecommendedBands['Correlation'] > 0]
+                        recommendedBands[reqInEvent['band']['_id']] = math.sqrt((rawRecommendedBands['Correlation'].sum() / len(requestedBandsDataMat.T))**(1/len(requestedBandsDataMat.T)))
+
+                    # endnew
+
+
+
+#old
+# for index, row in sorted_corr.iterrows():
+#     for eventObj in evnetsIds:
+#         if (str(eventObj['_id']) == row.name):
+#             for reqInEvent in eventObj['requests']:
+#                 if reqInEvent['band']['_id'] in recommendedBands:
+#                     recommendedBands[reqInEvent['band']['_id']] += 1
+#                 else:
+#                     recommendedBands[reqInEvent['band']['_id']] = 1
+#oldend
 
 for requestedBand in requestedBands:
     recommendedBands.pop(requestedBand, None)
+
+#new
+for key, value in dict(recommendedBands).items():
+    if value <= 0:
+        del recommendedBands[key]
+#new
+
+
 
 recommendedBands = sorted_dict = collections.OrderedDict(sorted(recommendedBands.items(), key=lambda x: x[1], reverse=True))
 print(json.dumps(recommendedBands))

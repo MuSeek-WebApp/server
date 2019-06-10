@@ -218,11 +218,11 @@ exports.recommendBands = async (req, res) => {
     const bandIds = Object.keys(recommendedBands);
     const bands = await BandSrv.findByIds(bandIds);
     bands.forEach((band, idx) => {
-      bands[idx].shows_in_similar_events = recommendedBands[band._id];
+      bands[idx].successPercentage = recommendedBands[band._id];
     });
 
     bands.sort((a, b) => {
-      return b.shows_in_similar_events - a.shows_in_similar_events;
+      return b.successPercentage - a.successPercentage;
     });
 
     res.json(bands);
