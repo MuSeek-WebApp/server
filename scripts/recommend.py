@@ -16,6 +16,8 @@ eventIdArr = []
 bandIdArr = []
 requestedBands = np.array(json.loads(sys.argv[1]))
 
+event_corr_score = int(float(sys.argv[2]))
+
 for event in evnetsIds:
     eventIdArr.append(str(event['_id']))
 
@@ -34,6 +36,7 @@ for band in bandsIds:
 
 randomEventId = str(random.random() * 100000000000000)
 learningMat[randomEventId] = pd.Series(0, learningMat.index)
+learningMat.fillna(0)
 
 for requestedBand in requestedBands:
     learningMat.at[str(requestedBand), randomEventId] = 1
@@ -42,6 +45,7 @@ selected_event = learningMat[randomEventId]
 movieslikeSelected = learningMat.corrwith(selected_event)
 corr_table = pd.DataFrame(movieslikeSelected, columns=['Correlation'])
 sorted_corr = corr_table.sort_values('Correlation', ascending=False).head(20)
+sorted_corr = sorted_corr[sorted_corr['Correlation'] > event_corr_score]
 recommendedBands = {}
 
 for index, row in sorted_corr.iterrows():
