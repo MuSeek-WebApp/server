@@ -17,8 +17,11 @@ eventIdArr = []
 bandIdArr = []
 requestedBands = np.array(json.loads(sys.argv[1]))
 #requestedBands = ['441776537198933.5']
+<<<<<<< HEAD
 
 event_corr_score = int(float(sys.argv[2]))
+=======
+>>>>>>> 74c320a0c3d39908d48f07f0740688bc5ca272b6
 
 for event in evnetsIds:
     eventIdArr.append(str(event['_id']))
@@ -48,7 +51,6 @@ movieslikeSelected = learningMat.corrwith(selected_event)
 corr_table = pd.DataFrame(movieslikeSelected, columns=['Correlation'])
 sorted_corr = corr_table.sort_values('Correlation', ascending=False).head(20)
 sorted_corr = sorted_corr[sorted_corr['Correlation'] > event_corr_score]
-
 recommendedBands = {}
 
 
