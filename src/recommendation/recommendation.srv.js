@@ -9,6 +9,12 @@ class RecommendationService {
         args: [JSON.stringify(bandsIds)]
       };
 
+      if (process.env.EVENT_CORRELATION) {
+        options.args.push(process.env.EVENT_CORRELATION);
+      } else {
+        options.args.push(0);
+      }
+
       if (process.env.PYTHON_PATH) {
         options.pythonPath = process.env.PYTHON_PATH;
       }
