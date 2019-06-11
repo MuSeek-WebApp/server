@@ -5,17 +5,23 @@ import UserService from '../user/user.srv';
 exports.searchItem = async (req, res) => {
   try {
     const searchedText = req.params.text;
-    const result = {
-      searchedBands: await UserService.getUsersByNameAndType(
-        searchedText,
-        'band'
-      ),
-      searchedBusinesses: await UserService.getUsersByNameAndType(
-        searchedText,
-        'business'
-      ),
-      searchedEvents: await EventService.getEventsByName(searchedText)
-    };
+    const result = [
+      {
+        itemType: 'Bands',
+        values: await UserService.getUsersByNameAndType(searchedText, 'band')
+      },
+      {
+        itemType: 'Businesses',
+        values: await UserService.getUsersByNameAndType(
+          searchedText,
+          'business'
+        )
+      },
+      {
+        itemType: 'Events',
+        values: await EventService.getEventsByName(searchedText)
+      }
+    ];
 
     res.json(result);
   } catch (error) {
