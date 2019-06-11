@@ -164,6 +164,15 @@ class EventService {
     await EventModel.findByIdAndRemove(id);
   }
 
+  async getEventsByName(nameText) {
+    return EventModel.find(
+      {
+        name: { $regex: `.*${nameText}.*`, $options: 'i' }
+      },
+      { _id: 1, name: 1 }
+    ).exec();
+  }
+
   isEventfull(eventId) {
     const aggregateQuery = [];
     const matchQuery = {};

@@ -42,6 +42,16 @@ class UserService {
     ]).exec();
   }
 
+  async getUsersByNameAndType(nameText, type) {
+    return UserModel.find(
+      {
+        name: { $regex: `.*${nameText}.*`, $options: 'i' },
+        type
+      },
+      { _id: 1, name: 1 }
+    ).exec();
+  }
+
   async filterReviews(userId) {
     const sortingFields = {
       'reviews.timestamp': -1
