@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import fs from 'fs';
 import handlebars from 'handlebars';
 import logger from '../utils/logger';
+import path from 'path';
 
 class MailSrv {
   constructor() {
@@ -17,9 +18,11 @@ class MailSrv {
   }
 
   async sendMail(email, requestUserName, userName, eventName, status) {
-    logger.info('creating mail html in path ' + `${__dirname}\\template.html`);
+    logger.info(
+      'creating mail html in path ' + path.join(__dirname, 'template.html')
+    );
     fs.readFile(
-      `${__dirname}\\template.html`,
+      path.join(__dirname, 'template.html'),
       {
         encoding: 'utf-8'
       },
