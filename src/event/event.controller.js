@@ -1,8 +1,17 @@
+/* eslint-disable prettier/prettier */
 import logger from '../utils/logger';
 import EventService from './event.srv';
 import { BandModel } from '../band/band.model';
 import RecommendationService from '../recommendation/recommendation.srv';
 import BandSrv from '../band/band.srv';
+import MailSrv from '../mail/mail.srv';
+
+const statusDictionary = {
+  WAITING_FOR_BAND_APPROVAL: 'Waiting for band approval',
+  WAITING_FOR_BUSINESS_APPROVAL: 'Waiting for business approval',
+  APPROVED: 'Approved',
+  DENIED: 'Denied'
+};
 
 exports.findAll = async (req, res) => {
   try {
@@ -67,6 +76,16 @@ exports.insertEvent = async (req, res, next) => {
   try {
     const newEvent = await EventService.insert(req.body, req.reqUser);
     res.json(newEvent);
+
+    newEvent.requests.forEach((request) => {
+      MailSrv.sendMail(
+        request.band.contactDetails.email,
+        newEvent.business.name,
+        request.band.name,
+        newEvent.name,
+        statusDictionary[request.status]
+      );
+    });
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -77,8 +96,47 @@ exports.insertEvent = async (req, res, next) => {
 
 exports.updateEvent = async (req, res, next) => {
   try {
+    const oldEvent = await EventService.findById(req.body._id);
     const updatedEvent = await EventService.update(req.body);
     res.json(updatedEvent);
+
+    // Check requests changes and send mail notifications
+    updatedEvent.requests.forEach(async (request) => {
+      if (
+        oldEvent.requests.find((elem) => {
+          return elem.band._id === request.band._id;
+        }) === undefined ||
+        oldEvent.requests.find((elem) => {
+          return (
+            elem.band._id === request.band._id && elem.status !== request.status
+          );
+        }) !== undefined
+      ) {
+        await MailSrv.sendMail(
+          request.band.contactDetails.email,
+          updatedEvent.business.name,
+          request.band.name,
+          updatedEvent.name,
+          statusDictionary[request.status]
+        );
+      }
+    });
+
+    oldEvent.requests.forEach(async (request) => {
+      if (
+        updatedEvent.requests.find((elem) => {
+          return elem.band._id === request.band._id;
+        }) === undefined
+      ) {
+        await MailSrv.sendMail(
+          request.band.contactDetails.email,
+          updatedEvent.business.name,
+          request.band.name,
+          updatedEvent.name,
+          statusDictionary[request.status]
+        );
+      }
+    });
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -121,6 +179,13 @@ exports.registerBand = async (req, res, next) => {
   try {
     await EventService.addRequest(event._id, registeredBand, status);
     res.sendStatus(200);
+    await MailSrv.sendMail(
+      event.business.contactDetails.email,
+      reqUser.name,
+      event.business.name,
+      event.name,
+      statusDictionary[status]
+    );
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
@@ -158,6 +223,15 @@ exports.approveBand = async (req, res, next) => {
       status,
       oldStatus
     );
+
+    await MailSrv.sendMail(
+      event.business.contactDetails.email,
+      reqUser.name,
+      event.business.name,
+      event.name,
+      statusDictionary[status]
+    );
+
     res.sendStatus(200);
   } catch (error) {
     logger.error(error);
@@ -186,6 +260,13 @@ exports.denyBand = async (req, res, next) => {
   try {
     await EventService.updateRequest(event._id, deniedBandId, 'DENIED');
     res.sendStatus(200);
+    await MailSrv.sendMail(
+      event.business.contactDetails.email,
+      reqUser.name,
+      event.business.name,
+      event.name,
+      statusDictionary.DENIED
+    );
   } catch (error) {
     logger.error(error);
     res.sendStatus(500);
