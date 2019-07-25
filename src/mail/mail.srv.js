@@ -17,6 +17,7 @@ class MailSrv {
   }
 
   async sendMail(email, requestUserName, userName, eventName, status) {
+    logger.info('creating mail html in path ' + `${__dirname}\\template.html`);
     fs.readFile(
       `${__dirname}\\template.html`,
       {
